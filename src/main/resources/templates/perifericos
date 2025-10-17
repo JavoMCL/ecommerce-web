@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Perifericos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <!--Llamado del header y footer-->
+    <div th:replace="navbar :: navbar"></div>
+
+    <!--Contenido de la pagina-->
+    <h1 class="mb-4">Periféricos</h1>
+        
+        <div class="row">
+            <!-- Teclado 1 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Teclado Mecánico Redragon Kumara</h5>
+                        <p class="card-text">
+                            • Switches: Redragon Red<br>
+                            • Iluminación: RGB<br>
+                            • Teclas: 87 compactas<br>
+                            • Anti-ghosting: 100%
+                        </p>
+                        <p class="h4 text-primary">$59.99</p>
+                        <button class="btn btn-primary">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teclado 2 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Logitech MX Keys</h5>
+                        <p class="card-text">
+                            • Tecnología: Inalámbrico<br>
+                            • Batería: 10 días<br>
+                            • Material: Aluminio<br>
+                            • Multi-dispositivo: Sí
+                        </p>
+                        <p class="h4 text-primary">$99.99</p>
+                        <button class="btn btn-primary">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mouse 1 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Razer DeathAdder V2</h5>
+                        <p class="card-text">
+                            • Sensor: 20K DPI<br>
+                            • Botones: 8 programables<br>
+                            • Iluminación: RGB<br>
+                            • Peso: 82g
+                        </p>
+                        <p class="h4 text-primary">$69.99</p>
+                        <button class="btn btn-primary">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mouse 2 -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Logitech MX Master 3</h5>
+                        <p class="card-text">
+                            • Tecnología: Inalámbrico<br>
+                            • Batería: 70 días<br>
+                            • Sensor: 4000 DPI<br>
+                            • Rueda: MagSpeed
+                        </p>
+                        <p class="h4 text-primary">$99.99</p>
+                        <button class="btn btn-primary">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+
+</div>
+</body>
+</html>
