@@ -99,21 +99,21 @@
   </div>
 
   <script>
-    const API_CAT = '/api/categorias';
-    const API_PROD = '/api/productos';
+const API_CAT = '/api/categorias';
+const API_PROD = '/api/productos';
 
-    // ==================== CATEGORÍAS ====================
+// ==================== CATEGORÍAS ====================
 
-    async function cargarCategorias() {
-      const res = await fetch(API_CAT);
-      const categorias = await res.json();
+async function cargarCategorias() {
+    const res = await fetch(API_CAT);
+    const categorias = await res.json();
 
-      const tbody = document.querySelector('#tablaCategorias tbody');
-      const select = document.querySelector('#productoCategoria');
-      tbody.innerHTML = '';
-      select.innerHTML = '<option value="">Seleccione categoría</option>';
+    const tbody = document.querySelector('#tablaCategorias tbody');
+    const select = document.querySelector('#productoCategoria');
+    tbody.innerHTML = '';
+    select.innerHTML = '<option value="">Seleccione categoría</option>';
 
-      categorias.forEach(c => {
+    categorias.forEach(c => {
         tbody.innerHTML += `
           <tr>
             <td>${c.id}</td>
@@ -125,53 +125,53 @@
           </tr>
         `;
         select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
-      });
-    }
+    });
+}
 
-    document.querySelector('#formCategoria').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('categoriaId').value;
-      const nombre = document.getElementById('categoriaNombre').value;
+document.querySelector('#formCategoria').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('categoriaId').value;
+    const nombre = document.getElementById('categoriaNombre').value;
 
-      const metodo = id ? 'PUT' : 'POST';
-      const url = id ? `${API_CAT}/${id}` : API_CAT;
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `${API_CAT}/${id}` : API_CAT;
 
-      await fetch(url, {
+    await fetch(url, {
         method: metodo,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, nombre })
-      });
-
-      resetCategoria();
-      cargarCategorias();
     });
 
-    function editarCategoria(c) {
-      document.getElementById('categoriaId').value = c.id;
-      document.getElementById('categoriaNombre').value = c.nombre;
-    }
+    resetCategoria();
+    cargarCategorias();
+});
 
-    async function eliminarCategoria(id) {
-      if (confirm('¿Eliminar categoría?')) {
+function editarCategoria(c) {
+    document.getElementById('categoriaId').value = c.id;
+    document.getElementById('categoriaNombre').value = c.nombre;
+}
+
+async function eliminarCategoria(id) {
+    if (confirm('¿Eliminar categoría?')) {
         await fetch(`${API_CAT}/${id}`, { method: 'DELETE' });
         cargarCategorias();
-      }
     }
+}
 
-    function resetCategoria() {
-      document.getElementById('categoriaId').value = '';
-      document.getElementById('categoriaNombre').value = '';
-    }
+function resetCategoria() {
+    document.getElementById('categoriaId').value = '';
+    document.getElementById('categoriaNombre').value = '';
+}
 
-    // ==================== PRODUCTOS ====================
+// ==================== PRODUCTOS ====================
 
-    async function cargarProductos() {
-      const res = await fetch(API_PROD);
-      const productos = await res.json();
-      const tbody = document.querySelector('#tablaProductos tbody');
-      tbody.innerHTML = '';
+async function cargarProductos() {
+    const res = await fetch(API_PROD);
+    const productos = await res.json();
+    const tbody = document.querySelector('#tablaProductos tbody');
+    tbody.innerHTML = '';
 
-      productos.forEach(p => {
+    productos.forEach(p => {
         tbody.innerHTML += `
           <tr>
             <td>${p.id}</td>
@@ -185,52 +185,60 @@
             </td>
           </tr>
         `;
-      });
-    }
-
-    document.querySelector('#formProducto').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('productoId').value;
-      const formData = new FormData();
-
-      formData.append('nombre', document.getElementById('productoNombre').value);
-      formData.append('descripcion', document.getElementById('productoDescripcion').value);
-      formData.append('precio', document.getElementById('productoPrecio').value);
-      formData.append('categoria_id', document.getElementById('productoCategoria').value);
-      const img = document.getElementById('productoImagen').files[0];
-      if (img) formData.append('imagen', img);
-
-      if (id) formData.append('id', id);
-
-      await fetch(API_PROD, { method: 'POST', body: formData });
-      resetProducto();
-      cargarProductos();
     });
+}
 
-    function editarProducto(p) {
-      document.getElementById('productoId').value = p.id;
-      document.getElementById('productoNombre').value = p.nombre;
-      document.getElementById('productoDescripcion').value = p.descripcion;
-      document.getElementById('productoPrecio').value = p.precio;
-      document.getElementById('productoCategoria').value = p.categoria?.id || '';
-    }
+document.querySelector('#formProducto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('productoId').value;
+    const formData = new FormData();
 
-    async function eliminarProducto(id) {
-      if (confirm('¿Eliminar producto?')) {
+    formData.append('nombre', document.getElementById('productoNombre').value);
+    formData.append('descripcion', document.getElementById('productoDescripcion').value);
+    formData.append('precio', document.getElementById('productoPrecio').value);
+    formData.append('categoria_id', document.getElementById('productoCategoria').value);
+
+    const img = document.getElementById('productoImagen').files[0];
+    if (img) formData.append('imagen', img);
+
+    if (id) formData.append('id', id);
+
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `${API_PROD}/${id}` : API_PROD;
+
+    await fetch(url, { method: metodo, body: formData });
+
+    resetProducto();
+    cargarProductos();
+});
+
+function editarProducto(p) {
+    document.getElementById('productoId').value = p.id;
+    document.getElementById('productoNombre').value = p.nombre;
+    document.getElementById('productoDescripcion').value = p.descripcion;
+    document.getElementById('productoPrecio').value = p.precio;
+    document.getElementById('productoCategoria').value = p.categoria?.id || '';
+    document.getElementById('productoImagen').value = '';
+}
+
+async function eliminarProducto(id) {
+    if (confirm('¿Eliminar producto?')) {
         await fetch(`${API_PROD}/${id}`, { method: 'DELETE' });
         cargarProductos();
-      }
     }
+}
 
-    function resetProducto() {
-      document.getElementById('formProducto').reset();
-      document.getElementById('productoId').value = '';
-    }
+function resetProducto() {
+    document.getElementById('formProducto').reset();
+    document.getElementById('productoId').value = '';
+    document.getElementById('productoImagen').value = '';
+}
 
-    // Inicialización
-    cargarCategorias();
-    cargarProductos();
-  </script>
+// Inicialización
+cargarCategorias();
+cargarProductos();
+</script>
+
 
 </body>
 </html>

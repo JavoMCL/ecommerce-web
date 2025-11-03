@@ -34,4 +34,9 @@ public class ProductoService {
     public void eliminar(Long id) {
         repo.deleteById(id);
     }
+
+    public Optional<Producto> buscarPorId(Long id) {
+    return repo.findById(id);
+}
+
 }

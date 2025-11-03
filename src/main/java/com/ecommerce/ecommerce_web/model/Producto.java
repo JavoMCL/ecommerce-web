@@ -1,5 +1,7 @@
 package com.ecommerce.ecommerce_web.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,7 +19,9 @@ public class Producto {
     private String imagen;
     private Boolean activo = true; 
 
-    @ManyToOne
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
+@ManyToOne
+@JoinColumn(name = "categoria_id")
+@JsonBackReference
+private Categoria categoria;
+
 }
