@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce_web.Repository;
 
-import com.ecommerce.ecommerce_web.model.Producto;
 import com.ecommerce.ecommerce_web.model.Categoria;
+import com.ecommerce.ecommerce_web.model.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -4,11 +4,13 @@ import com.ecommerce.ecommerce_web.model.Producto;
 import com.ecommerce.ecommerce_web.model.Categoria;
 import com.ecommerce.ecommerce_web.Repository.ProductoRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductoService {
+
     private final ProductoRepository repo;
 
     public ProductoService(ProductoRepository repo) {
@@ -34,9 +36,4 @@ public class ProductoService {
     public void eliminar(Long id) {
         repo.deleteById(id);
     }
-
-    public Optional<Producto> buscarPorId(Long id) {
-    return repo.findById(id);
-}
-
 }

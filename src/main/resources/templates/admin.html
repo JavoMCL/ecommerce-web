@@ -1,331 +1,253 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Administrar Productos y Categorías</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
 
-  <div class="container py-4">
-      <div th:replace="navbar :: navbar"></div>
-    <h1 class="text-center mb-4">Panel de Administración</h1>
+<div class="container py-4">
+  <!--Llamado del header-->
+    <div th:replace="navbar :: navbar"></div>
 
-    <!-- ==================== CATEGORÍAS ==================== -->
-    <div class="card mb-5 shadow">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Categorías</h4>
-      </div>
-      <div class="card-body">
-        <form id="formCategoria" class="row g-3">
-          <div class="col-md-6">
-            <input type="hidden" id="categoriaId">
-            <input type="text" class="form-control" id="categoriaNombre" placeholder="Nombre de la categoría" required>
-          </div>
-          <div class="col-md-6">
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <button type="button" class="btn btn-secondary" onclick="resetCategoria()">Cancelar</button>
-          </div>
-        </form>
+  <h1 class="text-center mb-4">Panel de Administración</h1>
 
-        <hr>
-
-        <table class="table table-striped" id="tablaCategorias">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+  <!-- ===================== CATEGORÍAS ===================== -->
+  <div class="card shadow mb-5">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Categorías</h4>
     </div>
 
-    <!-- ==================== PRODUCTOS ==================== -->
-    <div class="card shadow">
-      <div class="card-header bg-success text-white">
-        <h4 class="mb-0">Productos</h4>
-      </div>
-      <div class="card-body">
-        <form id="formProducto" class="row g-3" enctype="multipart/form-data">
-          <input type="hidden" id="productoId">
+    <div class="card-body">
+      <form id="formCategoria" class="row g-3">
+        <input type="hidden" id="categoriaId">
 
-          <div class="col-md-6">
-            <input type="text" id="productoNombre" class="form-control" placeholder="Nombre del producto" required>
-          </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="categoriaNombre" placeholder="Nombre de la categoría" required>
+        </div>
 
-          <div class="col-md-6">
-            <input type="number" id="productoPrecio" class="form-control" placeholder="Precio" required>
-          </div>
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-success">Guardar</button>
+          <button type="button" class="btn btn-secondary" onclick="resetCategoria()">Cancelar</button>
+        </div>
+      </form>
 
-          <div class="col-md-12">
-            <textarea id="productoDescripcion" class="form-control" placeholder="Descripción" required></textarea>
-          </div>
+      <hr>
 
-          <div class="col-md-6">
-            <select id="productoCategoria" class="form-select" required></select>
-          </div>
+      <table class="table table-striped" id="tablaCategorias">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
-          <div class="col-md-6">
-            <input type="file" id="productoImagen" class="form-control" accept="image/*">
-          </div>
-
-          <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <button type="button" class="btn btn-secondary" onclick="resetProducto()">Cancelar</button>
-          </div>
-        </form>
-
-        <hr>
-
-        <table class="table table-hover" id="tablaProductos">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Categoría</th>
-              <th>Imagen</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
     </div>
   </div>
 
-  <script>
-    const API_CAT = '/api/categorias';
-    const API_PROD = '/api/productos';
+  <!-- ===================== PRODUCTOS ===================== -->
+  <div class="card shadow">
+    <div class="card-header bg-success text-white">
+      <h4 class="mb-0">Productos</h4>
+    </div>
 
-    // ==================== CATEGORÍAS ====================
+    <div class="card-body">
 
-    async function cargarCategorias() {
-      const res = await fetch(API_CAT);
-      const categorias = await res.json();
+      <form id="formProducto" class="row g-3" enctype="multipart/form-data">
+        <input type="hidden" id="productoId">
 
-      const tbody = document.querySelector('#tablaCategorias tbody');
-      const select = document.querySelector('#productoCategoria');
-      tbody.innerHTML = '';
-      select.innerHTML = '<option value="">Seleccione categoría</option>';
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="productoNombre" placeholder="Nombre del producto" required>
+        </div>
 
-      categorias.forEach(c => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${c.id}</td>
-            <td>${c.nombre}</td>
-            <td>
-              <button class="btn btn-sm btn-warning" onclick='editarCategoria(${JSON.stringify(c)})'>Editar</button>
-              <button class="btn btn-sm btn-danger" onclick='eliminarCategoria(${c.id})'>Eliminar</button>
-            </td>
-          </tr>
-        `;
-        select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
-      });
-    }
+        <div class="col-md-6">
+          <input type="number" class="form-control" id="productoPrecio" placeholder="Precio" required>
+        </div>
 
-    document.querySelector('#formCategoria').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('categoriaId').value;
-      const nombre = document.getElementById('categoriaNombre').value;
+        <div class="col-md-12">
+          <textarea class="form-control" id="productoDescripcion" placeholder="Descripción" required></textarea>
+        </div>
 
-      const metodo = id ? 'PUT' : 'POST';
-      const url = id ? `${API_CAT}/${id}` : API_CAT;
+        <div class="col-md-6">
+          <select id="productoCategoria" class="form-select" required></select>
+        </div>
 
-      await fetch(url, {
-        method: metodo,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, nombre })
-      });
+        <div class="col-md-6">
+          <input type="file" class="form-control" id="productoImagen" accept="image/*">
+        </div>
 
-      resetCategoria();
-      cargarCategorias();
-    });
+        <div class="col-md-12">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" onclick="resetProducto()">Cancelar</button>
+        </div>
+      </form>
 
-    function editarCategoria(c) {
-      document.getElementById('categoriaId').value = c.id;
-      document.getElementById('categoriaNombre').value = c.nombre;
-    }
+      <hr>
 
-    async function eliminarCategoria(id) {
-      if (confirm('¿Eliminar categoría?')) {
-        await fetch(`${API_CAT}/${id}`, { method: 'DELETE' });
-        cargarCategorias();
-      }
-    }
+      <table class="table table-hover" id="tablaProductos">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Categoría</th>
+          <th>Imagen</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
-    function resetCategoria() {
-      document.getElementById('categoriaId').value = '';
-      document.getElementById('categoriaNombre').value = '';
-    }
-
-    // ==================== PRODUCTOS ====================
-
-    async function cargarProductos() {
-  const res = await fetch(API_PROD);
-  const productos = await res.json();
-  const tbody = document.querySelector('#tablaProductos tbody');
-  tbody.innerHTML = '';
-
-  productos.forEach(p => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${p.id}</td>
-        <td>${p.nombre}</td>
-        <td>$${p.precio}</td>
-        <td>${p.categoria?.nombre || '—'}</td>
-        <td><img src="${p.imagen}" alt="" width="60"></td>
-        <td>
-          <button class="btn btn-sm btn-success" onclick='guardarProducto(${JSON.stringify(p)})'>
-            Guardar
-          </button>
-          <button class="btn btn-sm btn-warning" onclick='editarProducto(${JSON.stringify(p)})'>Editar</button>
-          <button class="btn btn-sm btn-danger" onclick='eliminarProducto(${p.id})'>Eliminar</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-    // ==================== PRODUCTOS GUARDADOS ==================== 
-<div class="card mt-5 shadow">
-  <div class="card-header bg-info text-white">
-    <h4 class="mb-0">📦 Mis Productos Guardados</h4>
-      </div>
-          <div class="card-body">
-            <div class="row" id="productosGuardadosContainer">     
     </div>
   </div>
+  <div th:replace="footer :: footer"></div>
+
 </div>
 
-    document.querySelector('#formProducto').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('productoId').value;
-      const formData = new FormData();
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+  const API_CAT = '/api/categorias';
+  const API_PROD = '/api/productos';
 
-      formData.append('nombre', document.getElementById('productoNombre').value);
-      formData.append('descripcion', document.getElementById('productoDescripcion').value);
-      formData.append('precio', document.getElementById('productoPrecio').value);
-      formData.append('categoria_id', document.getElementById('productoCategoria').value);
-      const img = document.getElementById('productoImagen').files[0];
-      if (img) formData.append('imagen', img);
+  /* ===== CATEGORÍAS ===== */
+  async function cargarCategorias() {
+    const res = await fetch(API_CAT);
+    const categorias = await res.json();
 
-      if (id) formData.append('id', id);
+    const tbody = document.querySelector('#tablaCategorias tbody');
+    const select = document.querySelector('#productoCategoria');
+    tbody.innerHTML = '';
+    select.innerHTML = '<option value="">Seleccione categoría</option>';
 
-      await fetch(API_PROD, { method: 'POST', body: formData });
-      resetProducto();
-      cargarProductos();
+    categorias.forEach(c => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${c.id}</td>
+          <td>${c.nombre}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick='editarCategoria(${JSON.stringify(c)})'>Editar</button>
+            <button class="btn btn-danger btn-sm" onclick='eliminarCategoria(${c.id})'>Eliminar</button>
+          </td>
+        </tr>
+      `;
+
+      select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+    });
+  }
+
+  document.querySelector('#formCategoria').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const id = categoriaId.value;
+    const nombre = categoriaNombre.value;
+
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `${API_CAT}/${id}` : API_CAT;
+
+    await fetch(url, {
+      method: metodo,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre })
     });
 
-    function editarProducto(p) {
-      document.getElementById('productoId').value = p.id;
-      document.getElementById('productoNombre').value = p.nombre;
-      document.getElementById('productoDescripcion').value = p.descripcion;
-      document.getElementById('productoPrecio').value = p.precio;
-      document.getElementById('productoCategoria').value = p.categoria?.id || '';
-    }
-
-    async function eliminarProducto(id) {
-      if (confirm('¿Eliminar producto?')) {
-        await fetch(`${API_PROD}/${id}`, { method: 'DELETE' });
-        cargarProductos();
-      }
-    }
-
-    function resetProducto() {
-      document.getElementById('formProducto').reset();
-      document.getElementById('productoId').value = '';
-    }
-    // ==================== SISTEMA DE PRODUCTOS GUARDADOS ====================
-
-// Array para almacenar productos guardados
-let productosGuardados = JSON.parse(localStorage.getItem('productosGuardados')) || [];
-
-// Función para guardar producto
-function guardarProducto(producto) {
-    // Verificar si el producto ya está guardado
-    const existe = productosGuardados.some(p => p.id === producto.id);
-    
-    if (!existe) {
-        productosGuardados.push({
-            id: producto.id,
-            nombre: producto.nombre,
-            precio: producto.precio,
-            descripcion: producto.descripcion,
-            categoria: producto.categoria?.nombre || 'Sin categoría',
-            imagen: producto.imagen,
-            fechaGuardado: new Date().toLocaleString()
-        });
-        
-        // Guardar en localStorage
-        localStorage.setItem('productosGuardados', JSON.stringify(productosGuardados));
-        
-        // Actualizar la visualización
-        mostrarProductosGuardados();
-        
-        alert(` Producto "${producto.nombre}" guardado correctamente`);
-    } else {
-        alert(' Este producto ya está guardado');
-    }
-}
-
-// Función para mostrar productos guardados
-function mostrarProductosGuardados() {
-    const contenedor = document.getElementById('productosGuardadosContainer');
-    if (!contenedor) return;
-    
-    contenedor.innerHTML = '';
-    
-    if (productosGuardados.length === 0) {
-        contenedor.innerHTML = `
-            <div class="alert alert-info text-center">
-                No hay productos guardados
-            </div>
-        `;
-        return;
-    }
-    
-    productosGuardados.forEach(producto => {
-        const productoHTML = `
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}" style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title">${producto.nombre}</h5>
-                        <p class="card-text">${producto.descripcion}</p>
-                        <p class="text-success fw-bold">$${producto.precio}</p>
-                        <p class="text-muted small">Categoría: ${producto.categoria}</p>
-                        <p class="text-muted small">Guardado: ${producto.fechaGuardado}</p>
-                    </div>
-                    <div class="card-footer">
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProductoGuardado(${producto.id})">
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        contenedor.innerHTML += productoHTML;
-    });
-}
-
-// Función para eliminar producto guardado
-function eliminarProductoGuardado(id) {
-    if (confirm('¿Eliminar producto de la lista?')) {
-        productosGuardados = productosGuardados.filter(p => p.id !== id);
-        localStorage.setItem('productosGuardados', JSON.stringify(productosGuardados));
-        mostrarProductosGuardados();
-    }
-}
-
-    // Inicialización
+    resetCategoria();
     cargarCategorias();
+  });
+
+  function editarCategoria(c) {
+    categoriaId.value = c.id;
+    categoriaNombre.value = c.nombre;
+  }
+
+  async function eliminarCategoria(id) {
+    if (confirm("¿Eliminar categoría?")) {
+      await fetch(`${API_CAT}/${id}`, { method: 'DELETE' });
+      cargarCategorias();
+    }
+  }
+
+  function resetCategoria() {
+    categoriaId.value = '';
+    categoriaNombre.value = '';
+  }
+
+  /* ===== PRODUCTOS ===== */
+  async function cargarProductos() {
+    const res = await fetch(API_PROD);
+    const productos = await res.json();
+
+    const tbody = document.querySelector('#tablaProductos tbody');
+    tbody.innerHTML = '';
+
+    productos.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.nombre}</td>
+          <td>$${p.precio}</td>
+          <td>${p.categoria ? p.categoria.nombre : '—'}</td>
+          <td><img src="${p.imagen}" width="60"></td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick='editarProducto(${JSON.stringify(p)})'>Editar</button>
+            <button class="btn btn-danger btn-sm" onclick='eliminarProducto(${p.id})'>Eliminar</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  document.querySelector('#formProducto').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("nombre", productoNombre.value);
+    formData.append("descripcion", productoDescripcion.value);
+    formData.append("precio", productoPrecio.value);
+    formData.append("categoria_id", productoCategoria.value);
+
+    const img = productoImagen.files[0];
+    if (img) formData.append("imagen", img);
+
+    await fetch(API_PROD, {
+      method: 'POST',
+      body: formData
+    });
+
+    resetProducto();
     cargarProductos();
-    mostrarProductosGuardados();
-  </script>
+  });
+
+  function editarProducto(p) {
+    productoId.value = p.id;
+    productoNombre.value = p.nombre;
+    productoDescripcion.value = p.descripcion;
+    productoPrecio.value = p.precio;
+    productoCategoria.value = p.categoria ? p.categoria.id : "";
+  }
+
+  async function eliminarProducto(id) {
+    if (confirm("¿Eliminar producto?")) {
+      await fetch(`${API_PROD}/${id}`, { method: 'DELETE' });
+      cargarProductos();
+    }
+  }
+
+  function resetProducto() {
+    formProducto.reset();
+    productoId.value = "";
+  }
+
+  /* Inicialización */
+  cargarCategorias();
+  cargarProductos();
+
+</script>
 
 </body>
 </html>
