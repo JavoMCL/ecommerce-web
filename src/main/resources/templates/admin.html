@@ -99,21 +99,21 @@
   </div>
 
   <script>
-const API_CAT = '/api/categorias';
-const API_PROD = '/api/productos';
+    const API_CAT = '/api/categorias';
+    const API_PROD = '/api/productos';
 
-// ==================== CATEGORÍAS ====================
+    // ==================== CATEGORÍAS ====================
 
-async function cargarCategorias() {
-    const res = await fetch(API_CAT);
-    const categorias = await res.json();
+    async function cargarCategorias() {
+      const res = await fetch(API_CAT);
+      const categorias = await res.json();
 
-    const tbody = document.querySelector('#tablaCategorias tbody');
-    const select = document.querySelector('#productoCategoria');
-    tbody.innerHTML = '';
-    select.innerHTML = '<option value="">Seleccione categoría</option>';
+      const tbody = document.querySelector('#tablaCategorias tbody');
+      const select = document.querySelector('#productoCategoria');
+      tbody.innerHTML = '';
+      select.innerHTML = '<option value="">Seleccione categoría</option>';
 
-    categorias.forEach(c => {
+      categorias.forEach(c => {
         tbody.innerHTML += `
           <tr>
             <td>${c.id}</td>
@@ -125,120 +125,207 @@ async function cargarCategorias() {
           </tr>
         `;
         select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
-    });
-}
+      });
+    }
 
-document.querySelector('#formCategoria').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('categoriaId').value;
-    const nombre = document.getElementById('categoriaNombre').value;
+    document.querySelector('#formCategoria').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('categoriaId').value;
+      const nombre = document.getElementById('categoriaNombre').value;
 
-    const metodo = id ? 'PUT' : 'POST';
-    const url = id ? `${API_CAT}/${id}` : API_CAT;
+      const metodo = id ? 'PUT' : 'POST';
+      const url = id ? `${API_CAT}/${id}` : API_CAT;
 
-    await fetch(url, {
+      await fetch(url, {
         method: metodo,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, nombre })
+      });
+
+      resetCategoria();
+      cargarCategorias();
     });
 
-    resetCategoria();
-    cargarCategorias();
-});
+    function editarCategoria(c) {
+      document.getElementById('categoriaId').value = c.id;
+      document.getElementById('categoriaNombre').value = c.nombre;
+    }
 
-function editarCategoria(c) {
-    document.getElementById('categoriaId').value = c.id;
-    document.getElementById('categoriaNombre').value = c.nombre;
-}
-
-async function eliminarCategoria(id) {
-    if (confirm('¿Eliminar categoría?')) {
+    async function eliminarCategoria(id) {
+      if (confirm('¿Eliminar categoría?')) {
         await fetch(`${API_CAT}/${id}`, { method: 'DELETE' });
         cargarCategorias();
+      }
+    }
+
+    function resetCategoria() {
+      document.getElementById('categoriaId').value = '';
+      document.getElementById('categoriaNombre').value = '';
+    }
+
+    // ==================== PRODUCTOS ====================
+
+    async function cargarProductos() {
+  const res = await fetch(API_PROD);
+  const productos = await res.json();
+  const tbody = document.querySelector('#tablaProductos tbody');
+  tbody.innerHTML = '';
+
+  productos.forEach(p => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${p.id}</td>
+        <td>${p.nombre}</td>
+        <td>$${p.precio}</td>
+        <td>${p.categoria?.nombre || '—'}</td>
+        <td><img src="${p.imagen}" alt="" width="60"></td>
+        <td>
+          <button class="btn btn-sm btn-success" onclick='guardarProducto(${JSON.stringify(p)})'>
+            Guardar
+          </button>
+          <button class="btn btn-sm btn-warning" onclick='editarProducto(${JSON.stringify(p)})'>Editar</button>
+          <button class="btn btn-sm btn-danger" onclick='eliminarProducto(${p.id})'>Eliminar</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+    // ==================== PRODUCTOS GUARDADOS ==================== 
+<div class="card mt-5 shadow">
+  <div class="card-header bg-info text-white">
+    <h4 class="mb-0">📦 Mis Productos Guardados</h4>
+      </div>
+          <div class="card-body">
+            <div class="row" id="productosGuardadosContainer">     
+    </div>
+  </div>
+</div>
+
+    document.querySelector('#formProducto').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('productoId').value;
+      const formData = new FormData();
+
+      formData.append('nombre', document.getElementById('productoNombre').value);
+      formData.append('descripcion', document.getElementById('productoDescripcion').value);
+      formData.append('precio', document.getElementById('productoPrecio').value);
+      formData.append('categoria_id', document.getElementById('productoCategoria').value);
+      const img = document.getElementById('productoImagen').files[0];
+      if (img) formData.append('imagen', img);
+
+      if (id) formData.append('id', id);
+
+      await fetch(API_PROD, { method: 'POST', body: formData });
+      resetProducto();
+      cargarProductos();
+    });
+
+    function editarProducto(p) {
+      document.getElementById('productoId').value = p.id;
+      document.getElementById('productoNombre').value = p.nombre;
+      document.getElementById('productoDescripcion').value = p.descripcion;
+      document.getElementById('productoPrecio').value = p.precio;
+      document.getElementById('productoCategoria').value = p.categoria?.id || '';
+    }
+
+    async function eliminarProducto(id) {
+      if (confirm('¿Eliminar producto?')) {
+        await fetch(`${API_PROD}/${id}`, { method: 'DELETE' });
+        cargarProductos();
+      }
+    }
+
+    function resetProducto() {
+      document.getElementById('formProducto').reset();
+      document.getElementById('productoId').value = '';
+    }
+    // ==================== SISTEMA DE PRODUCTOS GUARDADOS ====================
+
+// Array para almacenar productos guardados
+let productosGuardados = JSON.parse(localStorage.getItem('productosGuardados')) || [];
+
+// Función para guardar producto
+function guardarProducto(producto) {
+    // Verificar si el producto ya está guardado
+    const existe = productosGuardados.some(p => p.id === producto.id);
+    
+    if (!existe) {
+        productosGuardados.push({
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            descripcion: producto.descripcion,
+            categoria: producto.categoria?.nombre || 'Sin categoría',
+            imagen: producto.imagen,
+            fechaGuardado: new Date().toLocaleString()
+        });
+        
+        // Guardar en localStorage
+        localStorage.setItem('productosGuardados', JSON.stringify(productosGuardados));
+        
+        // Actualizar la visualización
+        mostrarProductosGuardados();
+        
+        alert(` Producto "${producto.nombre}" guardado correctamente`);
+    } else {
+        alert(' Este producto ya está guardado');
     }
 }
 
-function resetCategoria() {
-    document.getElementById('categoriaId').value = '';
-    document.getElementById('categoriaNombre').value = '';
-}
-
-// ==================== PRODUCTOS ====================
-
-async function cargarProductos() {
-    const res = await fetch(API_PROD);
-    const productos = await res.json();
-    const tbody = document.querySelector('#tablaProductos tbody');
-    tbody.innerHTML = '';
-
-    productos.forEach(p => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${p.id}</td>
-            <td>${p.nombre}</td>
-            <td>$${p.precio}</td>
-            <td>${p.categoria?.nombre || '—'}</td>
-            <td><img src="${p.imagen}" alt="" width="60"></td>
-            <td>
-              <button class="btn btn-sm btn-warning" onclick='editarProducto(${JSON.stringify(p)})'>Editar</button>
-              <button class="btn btn-sm btn-danger" onclick='eliminarProducto(${p.id})'>Eliminar</button>
-            </td>
-          </tr>
+// Función para mostrar productos guardados
+function mostrarProductosGuardados() {
+    const contenedor = document.getElementById('productosGuardadosContainer');
+    if (!contenedor) return;
+    
+    contenedor.innerHTML = '';
+    
+    if (productosGuardados.length === 0) {
+        contenedor.innerHTML = `
+            <div class="alert alert-info text-center">
+                No hay productos guardados
+            </div>
         `;
+        return;
+    }
+    
+    productosGuardados.forEach(producto => {
+        const productoHTML = `
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">${producto.nombre}</h5>
+                        <p class="card-text">${producto.descripcion}</p>
+                        <p class="text-success fw-bold">$${producto.precio}</p>
+                        <p class="text-muted small">Categoría: ${producto.categoria}</p>
+                        <p class="text-muted small">Guardado: ${producto.fechaGuardado}</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-danger btn-sm" onclick="eliminarProductoGuardado(${producto.id})">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        contenedor.innerHTML += productoHTML;
     });
 }
 
-document.querySelector('#formProducto').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('productoId').value;
-    const formData = new FormData();
-
-    formData.append('nombre', document.getElementById('productoNombre').value);
-    formData.append('descripcion', document.getElementById('productoDescripcion').value);
-    formData.append('precio', document.getElementById('productoPrecio').value);
-    formData.append('categoria_id', document.getElementById('productoCategoria').value);
-
-    const img = document.getElementById('productoImagen').files[0];
-    if (img) formData.append('imagen', img);
-
-    if (id) formData.append('id', id);
-
-    const metodo = id ? 'PUT' : 'POST';
-    const url = id ? `${API_PROD}/${id}` : API_PROD;
-
-    await fetch(url, { method: metodo, body: formData });
-
-    resetProducto();
-    cargarProductos();
-});
-
-function editarProducto(p) {
-    document.getElementById('productoId').value = p.id;
-    document.getElementById('productoNombre').value = p.nombre;
-    document.getElementById('productoDescripcion').value = p.descripcion;
-    document.getElementById('productoPrecio').value = p.precio;
-    document.getElementById('productoCategoria').value = p.categoria?.id || '';
-    document.getElementById('productoImagen').value = '';
-}
-
-async function eliminarProducto(id) {
-    if (confirm('¿Eliminar producto?')) {
-        await fetch(`${API_PROD}/${id}`, { method: 'DELETE' });
-        cargarProductos();
+// Función para eliminar producto guardado
+function eliminarProductoGuardado(id) {
+    if (confirm('¿Eliminar producto de la lista?')) {
+        productosGuardados = productosGuardados.filter(p => p.id !== id);
+        localStorage.setItem('productosGuardados', JSON.stringify(productosGuardados));
+        mostrarProductosGuardados();
     }
 }
 
-function resetProducto() {
-    document.getElementById('formProducto').reset();
-    document.getElementById('productoId').value = '';
-    document.getElementById('productoImagen').value = '';
-}
-
-// Inicialización
-cargarCategorias();
-cargarProductos();
-</script>
-
+    // Inicialización
+    cargarCategorias();
+    cargarProductos();
+    mostrarProductosGuardados();
+  </script>
 
 </body>
 </html>
