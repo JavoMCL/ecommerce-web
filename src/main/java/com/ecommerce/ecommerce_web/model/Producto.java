@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
-@Entity
 public class Producto {
 
     @Id
@@ -16,9 +16,11 @@ public class Producto {
     private String nombre;
     private String descripcion;
     private Double precio;
-    private String imagen;
+    private String imagen;  
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 }
+
+

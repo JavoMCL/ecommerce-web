@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <!-- FRAGMENTO DEL NAVBAR -->
-<nav th:fragment="navbar" class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
 
         <a class="navbar-brand" th:href="@{/}">TecByte</a>
@@ -17,22 +17,12 @@
 
             <!-- Barra de búsqueda -->
             <form class="d-flex me-auto" role="search">
-                <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Buscar">
+                <input class="form-control me-2" type="search" placeholder="Buscar productos..." aria-label="Buscar">
                 <button class="btn btn-outline-success" type="submit">Buscar</button>
             </form>
 
             <!-- Opciones de navegación -->
             <ul class="navbar-nav">
-
-                <!-- Login -->
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/login}">Iniciar Sesión</a>
-                </li>
-
-                <!-- Administrar -->
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin}">Administrar</a>
-                </li>
 
                 <!-- Dropdown de categorías dinámico -->
                 <li class="nav-item dropdown">
@@ -51,6 +41,32 @@
                     </ul>
                 </li>
 
+                
+
+
+                <!-- Administrar (solo usuarios admin, pendiente implementación) -->
+                <li class="nav-item" th:if="${session.usuario != null}">
+                    <!-- th:if="${session.usuario.admin}" -->
+                    <a class="nav-link" th:href="@{/admin}">Administrar</a>
+                </li>
+
+                <!-- Carrito -->
+                <li class="nav-item" th:if="${session.usuario != null}">
+                    <a class="nav-link" th:href="@{/carrito/ver}">Carrito</a>
+                </li>
+
+                <!-- Mostrar login o cerrar sesión según sesión -->
+                <li class="nav-item" th:if="${session.usuario == null}">
+                    <a class="nav-link" th:href="@{/login}">Iniciar Sesión</a>
+                </li>
+                 <!-- Mostrar nombre del usuario si está logueado -->
+                <li class="nav-item" th:if="${session.usuario != null}">
+                    <a class="nav-link disabled" tabindex="-1" aria-disabled="true" th:text="${session.usuario.usuario}">Usuario</a>
+                </li>
+                <li class="nav-item" th:if="${session.usuario != null}">
+                    <a class="nav-link" th:href="@{/logout}">Cerrar Sesión</a>
+                </li>
+
             </ul>
         </div>
     </div>
@@ -60,3 +76,4 @@
 </nav>
 
 </html>
+

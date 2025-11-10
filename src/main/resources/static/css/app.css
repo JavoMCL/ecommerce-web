@@ -1,0 +1,42 @@
+/* ===== Layout para navbar/footer fijos ===== */
+body {
+  padding-top: 70px;    /* Ajusta a tu navbar real */
+  padding-bottom: 20px; /* Ajusta a tu footer real */
+}
+
+/* Si tus fragmentos exponen .navbar y .footer, puedes "pegarlos" */
+.navbar {
+  position: fixed; /* cambia a fixed si prefieres siempre fijo */
+  top: 0;
+  z-index: 1030;
+}
+
+.footer {
+  position: fixed; /* cambia a fixed si prefieres siempre fijo */
+  bottom: 0;
+   width: 100%;
+  z-index: 1030;
+}
+
+/* ===== Detalles visuales opcionales ===== */
+.table thead th {
+  white-space: nowrap;
+}
+
+.table img {
+  display: block;
+  height: auto;
+}
+
+.nav-tabs .nav-link {
+  cursor: pointer;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+.card-header {
+  border-top-left-radius: 1rem !important;
+  border-top-right-radius: 1rem !important;
+}

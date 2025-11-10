@@ -50,13 +50,16 @@ public class ProductoController {
         producto.setCategoria(categoria);
 
         if (imagen != null && !imagen.isEmpty()) {
+
             String nombreArchivo = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
-            String ruta = "src/main/resources/static/uploads/" + nombreArchivo;
+
+            String ruta = System.getProperty("user.dir") + "/uploads/" + nombreArchivo;
 
             File destino = new File(ruta);
             destino.getParentFile().mkdirs();
 
             imagen.transferTo(destino);
+
             producto.setImagen("/uploads/" + nombreArchivo);
         }
 

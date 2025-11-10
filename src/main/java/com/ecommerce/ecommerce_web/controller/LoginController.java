@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Controller
@@ -24,16 +25,21 @@ public class LoginController {
     @PostMapping("/login")
     public String procesarLogin(@RequestParam String correo,
                                 @RequestParam String contraseña,
+                                HttpSession session,
                                 Model model) {
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findByCorreo(correo);
         if (optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();
             if (usuario.getContraseña().equals(contraseña)) {
-                model.addAttribute("success", "Inicio de sesión exitoso ✅");
-                return "login"; // o redirigir a dashboard
+                // Guardar usuario en sesión
+                session.setAttribute("usuario", usuario);
+                // Redirigir a la página principal
+                return "redirect:/";
             }
         }
+
+        // Credenciales incorrectas
         model.addAttribute("error", "Credenciales incorrectas ❌");
         return "login";
     }
@@ -60,6 +66,13 @@ public class LoginController {
         usuarioRepository.save(nuevoUsuario);
         model.addAttribute("success", "Usuario registrado con éxito 🎉");
         return "login";
+    }
+
+    // ---------------- LOGOUT ----------------
+    @GetMapping("/logout")
+    public String cerrarSesion(HttpSession session) {
+        session.invalidate(); // destruir sesión
+        return "redirect:/login"; // volver al login
     }
 }
 
