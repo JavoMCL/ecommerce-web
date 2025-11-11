@@ -16,10 +16,10 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
             <!-- Barra de búsqueda -->
-            <form class="d-flex me-auto" role="search">
-                <input class="form-control me-2" type="search" placeholder="Buscar productos..." aria-label="Buscar">
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
-            </form>
+            <form class="d-flex me-auto" th:action="@{/buscar}" method="get" role="search">
+    <input class="form-control me-2" type="search" name="query" placeholder="Buscar productos..." aria-label="Buscar" required>
+    <button class="btn btn-outline-success" type="submit">Buscar</button>
+</form>
 
             <!-- Opciones de navegación -->
             <ul class="navbar-nav">

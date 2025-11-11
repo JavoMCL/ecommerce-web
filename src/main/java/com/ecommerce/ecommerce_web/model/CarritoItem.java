@@ -11,7 +11,7 @@ public class CarritoItem {
     private Long id;
 
     @ManyToOne
-    private Usuario usuario; // dueño del carrito
+    private Usuario usuario;
 
     @ManyToOne
     private Producto producto;
@@ -26,13 +26,14 @@ public class CarritoItem {
         this.cantidad = cantidad;
     }
 
-    // Getters y setters
     public Long getId() { return id; }
+
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
     public Producto getProducto() { return producto; }
     public void setProducto(Producto producto) { this.producto = producto; }
+
     public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 }
-

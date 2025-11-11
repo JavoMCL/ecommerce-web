@@ -26,40 +26,38 @@ public class CarritoController {
     private ProductoRepository productoRepository;
 
     // Agregar producto al carrito
-    @PostMapping("/agregar")
-    public String agregarAlCarrito(@RequestParam Long productoId,
-                                   @RequestParam(defaultValue = "1") int cantidad,
-                                   HttpSession session,
-                                   Model model) {
+   @PostMapping("/agregar/{id}")
+public String agregarAlCarrito(@PathVariable("id") Long productoId,
+                               @RequestParam(defaultValue = "1") int cantidad,
+                               HttpSession session) {
 
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            // Si no está logueado, redirige al login
-            return "redirect:/login";
-        }
-
-        Optional<Producto> productoOpt = productoRepository.findById(productoId);
-        if (productoOpt.isPresent()) {
-            Producto producto = productoOpt.get();
-
-            // Verificar si el producto ya está en el carrito
-            List<CarritoItem> items = carritoRepository.findByUsuario(usuario);
-            Optional<CarritoItem> itemExistente = items.stream()
-                    .filter(i -> i.getProducto().getId().equals(productoId))
-                    .findFirst();
-
-            if (itemExistente.isPresent()) {
-                CarritoItem item = itemExistente.get();
-                item.setCantidad(item.getCantidad() + cantidad);
-                carritoRepository.save(item);
-            } else {
-                CarritoItem nuevoItem = new CarritoItem(usuario, producto, cantidad);
-                carritoRepository.save(nuevoItem);
-            }
-        }
-
-        return "redirect:/carrito/ver";
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
+    if (usuario == null) {
+        return "redirect:/login";
     }
+
+    Optional<Producto> productoOpt = productoRepository.findById(productoId);
+    if (productoOpt.isPresent()) {
+        Producto producto = productoOpt.get();
+
+        // Buscar si ya existe en el carrito
+        List<CarritoItem> items = carritoRepository.findByUsuario(usuario);
+        Optional<CarritoItem> itemExistente = items.stream()
+                .filter(i -> i.getProducto().getId().equals(productoId))
+                .findFirst();
+
+        if (itemExistente.isPresent()) {
+            CarritoItem item = itemExistente.get();
+            item.setCantidad(item.getCantidad() + cantidad);
+            carritoRepository.save(item);
+        } else {
+            CarritoItem nuevoItem = new CarritoItem(usuario, producto, cantidad);
+            carritoRepository.save(nuevoItem);
+        }
+    }
+
+    return "redirect:/carrito/ver";
+}
 
     // Ver carrito
     @GetMapping("/ver")
@@ -91,5 +89,15 @@ public class CarritoController {
         });
         return "redirect:/carrito/ver";
     }
-}
 
+    // Finalizar compra (borrar carrito)
+    @PostMapping("/comprar")
+    public String finalizarCompra(HttpSession session) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario != null) {
+            List<CarritoItem> items = carritoRepository.findByUsuario(usuario);
+            carritoRepository.deleteAll(items);
+        }
+        return "redirect:/carrito/ver";
+    }
+}

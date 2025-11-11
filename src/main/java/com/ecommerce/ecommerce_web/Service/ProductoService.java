@@ -25,6 +25,11 @@ public class ProductoService {
         return repo.findByCategoria(categoria);
     }
 
+      public List<Producto> buscarPorNombreODescripcion(String query) {
+        return repo.buscarPorNombreODescripcion(query);
+    }
+
+
     public Optional<Producto> obtener(Long id) {
         return repo.findById(id);
     }

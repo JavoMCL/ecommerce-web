@@ -7,48 +7,49 @@
 </head>
 <body>
 <div class="container mt-4">
-     <div th:replace="navbar :: navbar"></div>
+    <div th:replace="~{navbar :: navbar}"></div>
+
     <h2>Mi carrito</h2>
 
-    <div th:if="${#lists.isEmpty(items)}">
-        <p>No hay productos en el carrito.</p>
+    <div th:if="${#lists.isEmpty(items)}" class="alert alert-info mt-3">
+        No hay productos en el carrito.
     </div>
 
-    <div th:if="${!#lists.isEmpty(items)}">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-            </tr>
+    <div th:if="${!#lists.isEmpty(items)}" class="mt-4">
+        <table class="table table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                    
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="item : ${items}">
-                <td th:text="${item.producto.nombre}"></td>
-                <td th:text="${item.producto.precio} + ' PYG'"></td>
-                <td>
-                    <form th:action="@{/carrito/actualizar/{id}(id=${item.id})}" method="post" class="d-flex">
-                        <input type="number" name="cantidad" th:value="${item.cantidad}" min="1" class="form-control me-2" style="width: 70px;">
-                        <button class="btn btn-primary btn-sm">Actualizar</button>
-                    </form>
-                </td>
-                <td th:text="${item.producto.precio * item.cantidad} + ' PYG'"></td>
-                <td>
-                    <form th:action="@{/carrito/eliminar/{id}(id=${item.id})}" method="post">
-                        <button class="btn btn-danger btn-sm">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.producto.nombre}"></td>
+                    <td th:text="${item.producto.precio} + ' PYG'"></td>
+                    <td th:text="${item.cantidad}"></td>
+                    <td th:text="${item.producto.precio * item.cantidad} + ' PYG'"></td>
+                    <td>
+                        <form th:action="@{/carrito/eliminar}" method="post">
+                            <input type="hidden" name="itemId" th:value="${item.id}">
+                            <button class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
             </tbody>
+            
         </table>
-
         <form th:action="@{/carrito/comprar}" method="post">
             <button class="btn btn-success">Finalizar compra</button>
         </form>
+
     </div>
+
+    <div th:replace="~{footer :: footer}"></div>
 </div>
 </body>
 </html>

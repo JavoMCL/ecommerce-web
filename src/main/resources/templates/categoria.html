@@ -44,9 +44,12 @@
 <div class="card-body">
   <h5 class="card-title" th:text="${p.nombre}"></h5>
   <p th:text="${p.descripcion}" class="small"></p>
+  <h6 class="text-success fw-bold" th:text="'PYG ' + ${p.precio}"></h6>
 
-         <form th:action="@{/carrito/agregar/{id}(id=${p.id})}" method="post" class="d-inline">
-    <button type="submit" class="btn btn-outline-primary btn-sm btn-agregar">
+
+       <form th:action="@{/carrito/agregar/{id}(id=${p.id})}" method="post">
+    <input type="hidden" name="cantidad" value="1">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
         <i class="bi bi-cart-plus"></i> Agregar al carrito
     </button>
 </form>
