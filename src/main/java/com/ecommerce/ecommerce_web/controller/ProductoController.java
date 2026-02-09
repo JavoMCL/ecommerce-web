@@ -18,21 +18,21 @@ import java.util.UUID;
 @CrossOrigin("*")
 public class ProductoController {
 
-    private final ProductoService service;
+    private final ProductoService productoService;
     private final CategoriaRepository categoriaRepo;
 
-    public ProductoController(ProductoService service, CategoriaRepository categoriaRepo) {
-        this.service = service;
+    public ProductoController(ProductoService productoService, CategoriaRepository categoriaRepo) {
+        this.productoService = productoService;
         this.categoriaRepo = categoriaRepo;
     }
 
     @GetMapping
     public List<Producto> listar() {
-        return service.listar();
+        return productoService.listarProductos();
     }
 
     @PostMapping
-    public Producto crear(
+    public void crear(
             @RequestParam("nombre") String nombre,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("precio") Double precio,
@@ -63,11 +63,13 @@ public class ProductoController {
             producto.setImagen("/uploads/" + nombreArchivo);
         }
 
-        return service.guardar(producto);
+        productoService.añadirProducto(producto);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        service.eliminar(id);
+    public void eliminar(@PathVariable(value = "id") Long idProducto) {
+        Producto producto = new Producto();
+        producto.setId(idProducto);
+        productoService.eliminarProducto(producto);
     }
 }

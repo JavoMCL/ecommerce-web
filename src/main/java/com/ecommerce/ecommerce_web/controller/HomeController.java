@@ -31,12 +31,12 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
 
-        // Últimos 10 productos agregados
+    
         List<Producto> ultimos = productoRepo.findTop10ByOrderByIdDesc();
 
         model.addAttribute("ultimosProductos", ultimos);
         model.addAttribute("titulo", "TecByte");
 
-        return "main"; // usa tu vista main.html
+        return "main";
     }
 }

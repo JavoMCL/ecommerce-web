@@ -3,42 +3,48 @@ package com.ecommerce.ecommerce_web.Service;
 import com.ecommerce.ecommerce_web.model.Producto;
 import com.ecommerce.ecommerce_web.model.Categoria;
 import com.ecommerce.ecommerce_web.Repository.ProductoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductoService {
+public class ProductoService implements IProductoService{
 
-    private final ProductoRepository repo;
+    @Autowired
+    private ProductoRepository repo;
 
-    public ProductoService(ProductoRepository repo) {
-        this.repo = repo;
-    }
 
-    public List<Producto> listar() {
+    @Override
+    public List<Producto> listarProductos() {
         return repo.findAll();
     }
 
+    @Override
     public List<Producto> listarPorCategoria(Categoria categoria) {
         return repo.findByCategoria(categoria);
     }
 
+    @Override
       public List<Producto> buscarPorNombreODescripcion(String query) {
         return repo.buscarPorNombreODescripcion(query);
     }
 
 
+    @Override
     public Optional<Producto> obtener(Long id) {
         return repo.findById(id);
     }
 
-    public Producto guardar(Producto producto) {
-        return repo.save(producto);
+    @Override
+    public void añadirProducto(Producto producto) {
+        repo.save(producto);
     }
 
-    public void eliminar(Long id) {
-        repo.deleteById(id);
+    @Override
+    public void eliminarProducto(Producto producto) {
+        repo.delete(producto);
     }
 }

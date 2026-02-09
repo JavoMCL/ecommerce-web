@@ -2,26 +2,30 @@ package com.ecommerce.ecommerce_web.Service;
 
 import com.ecommerce.ecommerce_web.model.Categoria;
 import com.ecommerce.ecommerce_web.Repository.CategoriaRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CategoriaService {
-    private final CategoriaRepository repo;
+public class CategoriaService implements ICategoriaService{
 
-    public CategoriaService(CategoriaRepository repo) {
-        this.repo = repo;
-    }
+    @Autowired
+    private CategoriaRepository repo;
 
-    public List<Categoria> listar() {
+    @Override
+    public List<Categoria> listarCategorias() {
         return repo.findAll();
     }
 
-    public Categoria guardar(Categoria categoria) {
-        return repo.save(categoria);
+    @Override
+    public void añadirCategoria(Categoria categoria) {
+       repo.save(categoria);
     }
-    public void eliminar(Long id) {
-    repo.deleteById(id);
+
+    @Override
+    public void eliminarCategoria(Categoria categoria) {
+    repo.delete(categoria);
 }
 
 }

@@ -23,6 +23,6 @@ public class BusquedaController {
         List<Producto> resultados = productoService.buscarPorNombreODescripcion(query);
         model.addAttribute("resultados", resultados);
         model.addAttribute("query", query);
-        return "busqueda"; // plantilla busqueda.html
+        return "busqueda"; 
     }
 }

@@ -35,6 +35,6 @@ public class CategoryViewController {
         model.addAttribute("categoria", categoria);
         model.addAttribute("productos", productoService.listarPorCategoria(categoria));
 
-        return "categoria"; // la vista reutilizable
+        return "categoria";
     }
 }

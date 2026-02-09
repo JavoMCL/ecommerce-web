@@ -12,31 +12,33 @@ import java.util.List;
 @CrossOrigin("*")
 public class CategoriaController {
 
-    private final CategoriaService service;
+    private final CategoriaService categoriaService;
 
-    public CategoriaController(CategoriaService service) {
-        this.service = service;
+    public CategoriaController(CategoriaService categoriaService) {
+        this.categoriaService = categoriaService;
     }
 
     @GetMapping
     public List<Categoria> listar() {
-        return service.listar();
+        return categoriaService.listarCategorias();
     }
 
     @PostMapping
-    public Categoria crear(@RequestBody Categoria categoria) {
-        return service.guardar(categoria);
+    public void crear(@RequestBody Categoria categoria) {
+         categoriaService.añadirCategoria(categoria);
     }
 
     @PutMapping("/{id}")
-    public Categoria actualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
+    public void actualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
         categoria.setId(id);
-        return service.guardar(categoria);
+       categoriaService.añadirCategoria(categoria);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        service.eliminar(id);
+    public void eliminar(@PathVariable (value = "id") Long idCategoria) {
+        Categoria categoria = new Categoria();
+        categoria.setId(idCategoria);
+        categoriaService.eliminarCategoria(categoria);
     }
 }
 
