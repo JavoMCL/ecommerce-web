@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"></html>>
 
 <!-- FRAGMENTO DEL NAVBAR -->
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -7,9 +8,8 @@
 
         <a class="navbar-brand" th:href="@{/}">TecByte</a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
-                aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -17,38 +17,36 @@
 
             <!-- Barra de búsqueda -->
             <form class="d-flex me-auto" th:action="@{/buscar}" method="get" role="search">
-    <input class="form-control me-2" type="search" name="query" placeholder="Buscar productos..." aria-label="Buscar" required>
-    <button class="btn btn-outline-success" type="submit">Buscar</button>
-</form>
+                <input class="form-control me-2" type="search" name="query" placeholder="Buscar productos..."
+                    aria-label="Buscar" required>
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
 
             <!-- Opciones de navegación -->
             <ul class="navbar-nav">
 
                 <!-- Dropdown de categorías dinámico -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         Categorías
                     </a>
 
                     <ul class="dropdown-menu">
                         <li th:each="cat : ${categoriasNavbar}">
-                            <a class="dropdown-item"
-                               th:text="${cat.nombre}"
-                               th:href="@{/categoria/{id}(id=${cat.id})}">
+                            <a class="dropdown-item" th:text="${cat.nombre}" th:href="@{/categoria/{id}(id=${cat.id})}">
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                
 
 
-                <!-- Administrar (solo usuarios admin, pendiente implementación) -->
-                <li class="nav-item" th:if="${session.usuario != null}">
-                    <!-- th:if="${session.usuario.admin}" -->
+
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:href="@{/admin}">Administrar</a>
                 </li>
+
 
                 <!-- Carrito -->
                 <li class="nav-item" th:if="${session.usuario != null}">
@@ -59,15 +57,16 @@
                 <li class="nav-item" th:if="${session.usuario == null}">
                     <a class="nav-link" th:href="@{/login}">Iniciar Sesión</a>
                 </li>
-                 <!-- Mostrar nombre del usuario si está logueado -->
+                <!-- Mostrar nombre del usuario si está logueado -->
                 <li class="nav-item" th:if="${session.usuario != null}">
-                    <a class="nav-link disabled" tabindex="-1" aria-disabled="true" th:text="${session.usuario.usuario}">Usuario</a>
+                    <a class="nav-link disabled" tabindex="-1" aria-disabled="true"
+                        th:text="${session.usuario.usuario}">Usuario</a>
                 </li>
                 <li class="nav-item" th:if="${session.usuario != null}">
                     <a class="nav-link" th:href="@{/logout}">Cerrar Sesión</a>
                 </li>
 
-                 <li class="nav-item"><a class="nav-link" th:href="@{/servicios}">Servicios</a>
+                <li class="nav-item"><a class="nav-link" th:href="@{/servicios}">Servicios</a>
                 </li>
 
             </ul>
@@ -79,4 +78,3 @@
 </nav>
 
 </html>
-

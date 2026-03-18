@@ -66,6 +66,43 @@ public class ProductoController {
         productoService.añadirProducto(producto);
     }
 
+
+@PutMapping("/{id}")
+public void actualizar(
+        @PathVariable Long id,
+        @RequestParam("nombre") String nombre,
+        @RequestParam("descripcion") String descripcion,
+        @RequestParam("precio") Double precio,
+        @RequestParam("categoria_id") Long categoriaId,
+        @RequestParam(value = "imagen", required = false) MultipartFile imagen
+) throws IOException {
+
+    Producto producto = productoService.obtener(id)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+    Categoria categoria = categoriaRepo.findById(categoriaId)
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+    producto.setNombre(nombre);
+    producto.setDescripcion(descripcion);
+    producto.setPrecio(precio);
+    producto.setCategoria(categoria);
+
+    if (imagen != null && !imagen.isEmpty()) {
+        String nombreArchivo = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
+        String ruta = System.getProperty("user.dir") + "/uploads/" + nombreArchivo;
+
+        File destino = new File(ruta);
+        destino.getParentFile().mkdirs();
+        imagen.transferTo(destino);
+
+        producto.setImagen("/uploads/" + nombreArchivo);
+    }
+
+    productoService.añadirProducto(producto);
+}
+
+
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable(value = "id") Long idProducto) {
         Producto producto = new Producto();
