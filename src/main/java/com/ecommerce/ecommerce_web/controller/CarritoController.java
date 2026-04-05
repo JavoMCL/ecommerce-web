@@ -2,7 +2,6 @@ package com.ecommerce.ecommerce_web.controller;
 
 import com.ecommerce.ecommerce_web.model.CarritoItem;
 import com.ecommerce.ecommerce_web.model.Producto;
-import com.ecommerce.ecommerce_web.model.Usuario;
 import com.ecommerce.ecommerce_web.Repository.CarritoRepository;
 import com.ecommerce.ecommerce_web.Repository.ProductoRepository;
 

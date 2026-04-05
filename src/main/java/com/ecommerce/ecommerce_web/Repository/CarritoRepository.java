@@ -1,7 +1,6 @@
 package com.ecommerce.ecommerce_web.Repository;
 
 import com.ecommerce.ecommerce_web.model.CarritoItem;
-import com.ecommerce.ecommerce_web.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
