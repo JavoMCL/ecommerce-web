@@ -1,7 +1,10 @@
 package com.ecommerce.ecommerce_web.auth.config;
 
 import com.ecommerce.ecommerce_web.auth.repository.Token;
+import com.ecommerce.ecommerce_web.auth.repository.TokenRepository;
 import com.ecommerce.ecommerce_web.auth.service.JwtService;
+import com.ecommerce.ecommerce_web.auth.usuario.User;
+import com.ecommerce.ecommerce_web.auth.usuario.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -48,6 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwtToken = authHeader.substring(7);
         final String userEmail = jwtService.extractUsername(jwtToken);
         if (userEmail == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+            filterChain.doFilter(request, response);
             return;
         }
         final Token token = tokenRepository.findByToken(jwtToken).orElse(null);
@@ -65,7 +68,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final boolean isTokenValid = jwtService.isTokenValid(jwtToken, user.get());
         if(!isTokenValid){
-            return;;
+            filterChain.doFilter(request, response);
+            return;
         }
 
         final var authToken = new UsernamePasswordAuthenticationToken(

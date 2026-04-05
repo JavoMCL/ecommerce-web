@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce_web.model;
 
+import com.ecommerce.ecommerce_web.auth.usuario.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
@@ -22,14 +23,14 @@ public class CarritoItem {
     private Long id;
 
     @ManyToOne
-    private Usuario usuario;
+    private User usuario;
 
     @ManyToOne
     private Producto producto;
 
     private int cantidad;
 
-    public CarritoItem(Usuario usuario, Producto producto, int cantidad){
+    public CarritoItem(User usuario, Producto producto, int cantidad){
         this.usuario = usuario;
         this.producto = producto;
         this.cantidad = cantidad;

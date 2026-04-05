@@ -1,8 +1,12 @@
 package com.ecommerce.ecommerce_web.auth.service;
 
 import com.ecommerce.ecommerce_web.auth.controller.LoginRequest;
+import com.ecommerce.ecommerce_web.auth.controller.RegisterRequest;
+import com.ecommerce.ecommerce_web.auth.controller.TokenResponse;
 import com.ecommerce.ecommerce_web.auth.repository.Token;
+import com.ecommerce.ecommerce_web.auth.repository.TokenRepository;
 import com.ecommerce.ecommerce_web.auth.usuario.User;
+import com.ecommerce.ecommerce_web.auth.usuario.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,15 +25,15 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public TokenResponse register(REgisterRequest request) {
+    public TokenResponse register(RegisterRequest request) {
         var user = User.builder()
                 .name(request.name())
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password) ())
+                .password(passwordEncoder.encode(request.password()))
                 .build();
         var savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var jwtToken = jwtService.generateToken(savedUser);
+        var refreshToken = jwtService.generateRefreshToken(savedUser);
         saveUserToken(savedUser, jwtToken);
         return new TokenResponse(jwtToken, refreshToken);
     }
@@ -52,6 +56,7 @@ public class AuthService {
                 token.setExpired(true);
                 token.setRevoked(true);
             }
+            tokenRepository.saveAll(validUserTokens);
         }
     }
 
@@ -66,7 +71,7 @@ public class AuthService {
         tokenRepository.save(token);
     }
 
-    public tokenResponse refreshToken(final String authHeader) {
+    public TokenResponse refreshToken(final String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Token no válido");
         }
@@ -79,9 +84,9 @@ public class AuthService {
         if(!jwtService.isTokenValid(refreshToken, user)){
             throw new IllegalArgumentException("Token no válido");
         }
-        final String accesToken = jwtService.generateToken(user);
+        final String accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
-        saveUserToken(user, accesToken);
-        return new TokenResponse(accesToken, refreshToken);
+        saveUserToken(user, accessToken);
+        return new TokenResponse(accessToken, refreshToken);
     }
 }

@@ -1,4 +1,4 @@
 package com.ecommerce.ecommerce_web.auth.controller;
 
-public class LoginRequest {
+public record LoginRequest(String email, String password) {
 }

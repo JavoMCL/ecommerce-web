@@ -1,13 +1,17 @@
 package com.ecommerce.ecommerce_web.auth.controller;
 
+import com.ecommerce.ecommerce_web.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/auth")
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -20,12 +24,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> authenticate(@RequestBody final AuthenticayionRequest request){
-        final TokenResponse token = service.authenticate(request);
+    public ResponseEntity<TokenResponse> authenticate(@RequestBody final LoginRequest request){
+        final TokenResponse token = service.login(request);
         return ResponseEntity.ok(token);
     }
 
-    @PostMapping ("/refresh")
+    @PostMapping("/refresh")
     public TokenResponse refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) final String authHeader){
         return service.refreshToken(authHeader);
     }

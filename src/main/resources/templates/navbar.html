@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org"
- xmlns:sec="http://www.thymeleaf.org/extras/spring-security"></html>>
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- FRAGMENTO DEL NAVBAR -->
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -49,21 +49,22 @@
 
 
                 <!-- Carrito -->
-                <li class="nav-item" th:if="${session.usuario != null}">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link" th:href="@{/carrito/ver}">Carrito</a>
                 </li>
 
-                <!-- Mostrar login o cerrar sesión según sesión -->
-                <li class="nav-item" th:if="${session.usuario == null}">
+                <!-- Mostrar login o cerrar sesion segun autenticacion -->
+                <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="nav-link" th:href="@{/login}">Iniciar Sesión</a>
                 </li>
-                <!-- Mostrar nombre del usuario si está logueado -->
-                <li class="nav-item" th:if="${session.usuario != null}">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link disabled" tabindex="-1" aria-disabled="true"
-                        th:text="${session.usuario.usuario}">Usuario</a>
+                        th:text="${#authentication.name}">Usuario</a>
                 </li>
-                <li class="nav-item" th:if="${session.usuario != null}">
-                    <a class="nav-link" th:href="@{/logout}">Cerrar Sesión</a>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="nav-link btn btn-link p-0" style="text-decoration: none;">Cerrar Sesion</button>
+                    </form>
                 </li>
 
                 <li class="nav-item"><a class="nav-link" th:href="@{/servicios}">Servicios</a>

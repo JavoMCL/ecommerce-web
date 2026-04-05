@@ -1,42 +1,42 @@
 package com.ecommerce.ecommerce_web.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestControllerAdvice
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(
-            ResourceNotFoundException ex, WebRequest request) {
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 404);
-        response.put("error", "Not Found");
-        response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-        
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ModelAndView handleResourceNotFoundException(
+            ResourceNotFoundException ex, HttpServletRequest request) {
+
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("timestamp", LocalDateTime.now());
+        modelAndView.addObject("status", HttpStatus.NOT_FOUND.value());
+        modelAndView.addObject("error", "Not Found");
+        modelAndView.addObject("message", ex.getMessage());
+        modelAndView.addObject("path", request.getRequestURI());
+        modelAndView.setStatus(HttpStatus.NOT_FOUND);
+        return modelAndView;
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGlobalException(
-            Exception ex, WebRequest request) {
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 500);
-        response.put("error", "Internal Server Error");
-        response.put("message", "Ocurrió un error interno del servidor");
-        
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ModelAndView handleGlobalException(
+            Exception ex, HttpServletRequest request) {
+
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("timestamp", LocalDateTime.now());
+        modelAndView.addObject("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        modelAndView.addObject("error", "Internal Server Error");
+        modelAndView.addObject("message", "Ocurrió un error interno del servidor");
+        modelAndView.addObject("path", request.getRequestURI());
+        modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        return modelAndView;
     }
 }
 

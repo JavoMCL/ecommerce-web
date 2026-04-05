@@ -150,13 +150,13 @@
     <!-- FORMULARIO DE REGISTRO -->
     <form th:action="@{/registro}" method="post">
         <div class="form-group">
-            <label for="usuario">Nombre de usuario</label>
-            <input type="text" id="usuario" name="usuario" placeholder="Tu nombre de usuario" required />
+            <label for="name">Nombre de usuario</label>
+            <input type="text" id="name" name="name" placeholder="Tu nombre de usuario" required />
         </div>
 
         <div class="form-group">
-            <label for="correo">Correo electrónico</label>
-            <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" required />
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required />
         </div>
 
         <div class="form-group">
@@ -172,11 +172,10 @@
         <button type="submit" class="btn btn-primary">Registrarse</button>
     </form>
 
-    <a th:href="@{/login}"><button class="btn btn-secondary">¿Ya tienes cuenta? Inicia Sesión</button></a>
+    <a th:href="@{/login}" class="btn btn-secondary">Ya tienes cuenta? Inicia sesion</a>
 
     <!-- MENSAJES -->
-    <div th:if="${error}" class="message error" th:text="${error}"></div>
-    <div th:if="${success}" class="message success" th:text="${success}"></div>
+    <div th:if="${param.error}" class="message error">Las contrasenas no coinciden.</div>
 </div>
 </body>
 </html>

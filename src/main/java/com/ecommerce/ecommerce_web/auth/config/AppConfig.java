@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerce_web.auth.config;
 
 import com.ecommerce.ecommerce_web.auth.usuario.User;
+import com.ecommerce.ecommerce_web.auth.usuario.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
+
+    private final UserRepository repository;
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -30,7 +34,7 @@ public class AppConfig {
     public UserDetailsService userDetailsService(){
         return username -> {
             final User user = repository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-            return new org.springframework.security.core.userdetails.User.builder()
+            return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getEmail())
                     .password(user.getPassword())
                     .build();

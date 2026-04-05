@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerce_web.controller;
 
+import com.ecommerce.ecommerce_web.auth.usuario.User;
 import com.ecommerce.ecommerce_web.model.CarritoItem;
 import com.ecommerce.ecommerce_web.model.Producto;
 import com.ecommerce.ecommerce_web.Repository.CarritoRepository;
@@ -30,7 +31,7 @@ public String agregarAlCarrito(@PathVariable("id") Long productoId,
                                @RequestParam(defaultValue = "1") int cantidad,
                                HttpSession session) {
 
-    Usuario usuario = (Usuario) session.getAttribute("usuario");
+   User usuario = (User) session.getAttribute("usuario");
     if (usuario == null) {
         return "redirect:/login";
     }
@@ -61,7 +62,7 @@ public String agregarAlCarrito(@PathVariable("id") Long productoId,
     // Ver carrito
     @GetMapping("/ver")
     public String verCarrito(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        User usuario = (User) session.getAttribute("usuario");
         if (usuario == null) {
             return "redirect:/login";
         }
@@ -92,7 +93,7 @@ public String agregarAlCarrito(@PathVariable("id") Long productoId,
     // Finalizar compra (borrar carrito)
     @PostMapping("/comprar")
     public String finalizarCompra(HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        User usuario = (User) session.getAttribute("usuario");
         if (usuario != null) {
             List<CarritoItem> items = carritoRepository.findByUsuario(usuario);
             carritoRepository.deleteAll(items);
