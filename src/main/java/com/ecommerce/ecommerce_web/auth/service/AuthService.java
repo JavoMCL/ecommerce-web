@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_web.auth.controller.RegisterRequest;
 import com.ecommerce.ecommerce_web.auth.controller.TokenResponse;
 import com.ecommerce.ecommerce_web.auth.repository.Token;
 import com.ecommerce.ecommerce_web.auth.repository.TokenRepository;
+import com.ecommerce.ecommerce_web.auth.usuario.Role;
 import com.ecommerce.ecommerce_web.auth.usuario.User;
 import com.ecommerce.ecommerce_web.auth.usuario.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class AuthService {
                 .name(request.name())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+                .role(Role.USER)
                 .build();
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(savedUser);

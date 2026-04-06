@@ -2,6 +2,7 @@ package com.ecommerce.ecommerce_web.auth.controller;
 
 import com.ecommerce.ecommerce_web.auth.usuario.User;
 import com.ecommerce.ecommerce_web.auth.usuario.UserRepository;
+import com.ecommerce.ecommerce_web.auth.usuario.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ public class AuthViewController {
                 .name(name)
                 .email(email)
                 .password(passwordEncoder.encode(password))
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
         return "redirect:/login?registered";

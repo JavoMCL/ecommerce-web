@@ -1,10 +1,9 @@
-   <!-- Footer -->
-    <footer th:fragment="footer" class="bg-dark text-white text-center py-1 fixed-bottom">
+ <footer th:fragment="footer" class="bg-dark text-white text-center py-1 fixed-bottom">
         <div class="container">
             <div class="text-center">
                 <span class="footer-text">
-                         &copy ; TecByte 2025 
-                    <span class="footer-divider">|</span> 
+                    &copy; Empresa <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+                    <span class="footer-divider">|</span>
                     Todos los derechos reservados
                     <span class="footer-divider">|</span> 
                     <a href="#" class="text-decoration-none footer-text">Política de Privacidad</a>
