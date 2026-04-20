@@ -27,11 +27,22 @@ class ProductoServiceTest {
     @InjectMocks
     private ProductoService service;
 
+    private Producto crearProducto(Long id, String nombre, String descripcion, Double precio, String imagen, Categoria categoria) {
+        Producto producto = new Producto();
+        producto.setId(id);
+        producto.setNombre(nombre);
+        producto.setDescripcion(descripcion);
+        producto.setPrecio(precio);
+        producto.setImagen(imagen);
+        producto.setCategoria(categoria);
+        return producto;
+    }
+
     @Test
     void listarProductosDevuelveLosProductosDelRepositorio() {
         List<Producto> productos = Arrays.asList(
-                new Producto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null),
-                new Producto(2L, "Teclado", "Teclado mecánico", 50.0, "teclado.jpg", null)
+                crearProducto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null),
+                crearProducto(2L, "Teclado", "Teclado mecanico", 50.0, "teclado.jpg", null)
         );
 
         when(repo.findAll()).thenReturn(productos);
@@ -46,7 +57,7 @@ class ProductoServiceTest {
     @Test
     void listarPorCategoriaDevuelveLosProductosDeLaCategoria() {
         Categoria categoria = new Categoria(1L, "Tecnología");
-        List<Producto> productos = List.of(new Producto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", categoria));
+        List<Producto> productos = List.of(crearProducto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", categoria));
 
         when(repo.findByCategoria(categoria)).thenReturn(productos);
 
@@ -59,7 +70,7 @@ class ProductoServiceTest {
 
     @Test
     void buscarPorNombreODescripcionDevuelveResultados() {
-        List<Producto> productos = List.of(new Producto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null));
+        List<Producto> productos = List.of(crearProducto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null));
 
         when(repo.buscarPorNombreODescripcion("mouse")).thenReturn(productos);
 
@@ -72,7 +83,7 @@ class ProductoServiceTest {
 
     @Test
     void obtenerDevuelveUnProductoCuandoExiste() {
-        Producto producto = new Producto(10L, "Laptop", "Laptop básica", 500.0, "laptop.jpg", null);
+        Producto producto = crearProducto(10L, "Laptop", "Laptop basica", 500.0, "laptop.jpg", null);
         when(repo.findById(10L)).thenReturn(Optional.of(producto));
 
         Optional<Producto> resultado = service.obtener(10L);
@@ -83,17 +94,17 @@ class ProductoServiceTest {
     }
 
     @Test
-    void añadirProductoGuardaElProducto() {
-        Producto producto = new Producto(null, "Auriculares", "Auriculares bluetooth", 30.0, "audifonos.jpg", null);
+    void anadirProductoGuardaElProducto() {
+        Producto producto = crearProducto(null, "Auriculares", "Auriculares bluetooth", 30.0, "audifonos.jpg", null);
 
-        service.añadirProducto(producto);
+        service.anadirProducto(producto);
 
         verify(repo).save(producto);
     }
 
     @Test
     void eliminarProductoBorraElProducto() {
-        Producto producto = new Producto(3L, "Monitor", "Monitor 24 pulgadas", 120.0, "monitor.jpg", null);
+        Producto producto = crearProducto(3L, "Monitor", "Monitor 24 pulgadas", 120.0, "monitor.jpg", null);
 
         service.eliminarProducto(producto);
 

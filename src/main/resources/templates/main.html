@@ -36,7 +36,7 @@
             <div class="card h-100 shadow-sm producto" style="display:none;">
 
                 <!-- Imagen -->
-                 <img th:src="${p.imagen}"
+                 <img th:src="@{'/api/productos/' + ${p.id} + '/imagen'}"
                      class="card-img-top"
                      style="height:180px; object-fit:cover;">
 

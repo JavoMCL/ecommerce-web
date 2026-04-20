@@ -16,7 +16,7 @@
 
     <div class="col-md-4 mb-4" th:each="p : ${resultados}">
       <div class="card h-100 shadow-sm">
-        <img th:src="${p.imagen}" class="card-img-top" style="height:200px; object-fit:cover">
+        <img th:src="@{'/api/productos/' + ${p.id} + '/imagen'}" class="card-img-top" style="height:200px; object-fit:cover">
         <div class="card-body">
           <h5 th:text="${p.nombre}"></h5>
           <p th:text="${p.descripcion}" class="small"></p>

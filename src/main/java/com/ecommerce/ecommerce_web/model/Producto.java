@@ -1,11 +1,9 @@
 package com.ecommerce.ecommerce_web.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,11 +25,17 @@ public class Producto {
     private String nombre;
     private String descripcion;
     private Double precio;
-    private String imagen;  
+    private String imagen;
+    private String tipoDeImagen;
+    private boolean disponible;
+    private int stock;
+
+    @JsonIgnore
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "imagen_bytes", columnDefinition = "bytea")
+    private byte[] imagenBytes;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 }
-
-

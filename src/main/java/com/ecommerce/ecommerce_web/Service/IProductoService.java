@@ -1,4 +1,8 @@
 package com.ecommerce.ecommerce_web.Service;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,15 +11,17 @@ import com.ecommerce.ecommerce_web.model.Producto;
 
 public interface IProductoService {
 
-    public List<Producto> listarProductos();
+    List<Producto> listarProductos();
 
-    public void añadirProducto(Producto producto);
+    void anadirProducto(Producto producto);
 
-    public void eliminarProducto(Producto producto);
+    void anadirProducto(Producto producto, MultipartFile imagen) throws IOException;
 
-    public List<Producto> listarPorCategoria(Categoria categoria);
+    void eliminarProducto(Producto producto);
 
-    public List<Producto> buscarPorNombreODescripcion(String query);
+    List<Producto> listarPorCategoria(Categoria categoria);
 
-    public Optional<Producto> obtener(Long id);
+    List<Producto> buscarPorNombreODescripcion(String query);
+
+    Optional<Producto> obtener(Long id);
 }

@@ -37,7 +37,7 @@
     <div class="col-md-4 mb-4 producto-card" th:each="p : ${productos}"
          th:data-precio="${p.precio}">
       <div class="card h-100 shadow-sm producto" style="display:none;">
-         <img th:src="${p.imagen}"
+         <img th:src="@{'/api/productos/' + ${p.id} + '/imagen'}"
      class="card-img-top"
      style="height:180px; object-fit:cover;">
 
