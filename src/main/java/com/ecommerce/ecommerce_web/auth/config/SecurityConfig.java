@@ -1,6 +1,5 @@
 package com.ecommerce.ecommerce_web.auth.config;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,25 +22,47 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/", "/login", "/registro", "/error", "/auth/**", "/servicios", "/buscar", "/categoria/**", "/api/productos/*/imagen", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/registro",
+                                "/error",
+                                "/auth/**",
+                                "/servicios",
+                                "/buscar",
+                                "/categoria/**",
+                                "/producto/**",
+                                "/api/productos/*/imagen",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .formLogin(login -> login
                         .loginPage("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
-                        .permitAll())
+                        .permitAll()
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
-                        .permitAll())
+                        .permitAll()
+                )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
