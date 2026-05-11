@@ -3,35 +3,40 @@ services:
     build:
       context: .
       dockerfile: ecommerce_web/Dockerfile
+
     ports:
-      - "${APP_PORT}:8080"
-    env_file:
-      - .env
+      - "8080:8080"
+
     environment:
-      DB_URL: "${DB_URL}"
-      DB_USER: "${DB_USER}"
-      DB_PASSWORD: "${DB_PASSWORD}"
-      JAVA_OPTS: "${JAVA_OPTS}"
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_KEY: ${JWT_KEY}
+
     restart: always
+
     depends_on:
       ecommerce_db:
         condition: service_healthy
 
   ecommerce_db:
     image: postgres:17
+
     ports:
       - "5432:5432"
-    env_file:
-      - .env
+
     environment:
-      POSTGRES_DB: "${POSTGRES_DB}"
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+
     restart: always
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME}"]
       interval: 10s
       timeout: 5s
       retries: 10
