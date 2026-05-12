@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce_web.auth.usuario;
+package com.ecommerce.ecommerce_web.auth.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,26 +1,26 @@
 # Ecommerce Web (Spring Boot)
 
-Aplicacion web de ecommerce construida con **Spring Boot 3**, con interfaz server-side usando **Thymeleaf**, persistencia con **JPA/Hibernate + PostgreSQL**, y seguridad con **Spring Security** (inicio de sesion por formulario + endpoints JWT para API).
+Ecommerce web application built with **Spring Boot 3**, server-side rendered with **Thymeleaf**, persistence using **JPA/Hibernate + PostgreSQL**, and security handled by **Spring Security** (form-based sign-in + JWT endpoints for the API).
 
-El proyecto combina dos estilos:
-- **Flujo web MVC** para tienda, carrito y vistas HTML.
-- **Flujo API REST** para integraciones administrativas o clientes externos.
-
----
-
-## Caracteristicas principales
-
-- Catalogo de productos y categorias.
-- Busqueda por nombre o descripcion.
-- Carrito de compras por usuario autenticado.
-- Modulo administrativo protegido por rol `ADMIN`.
-- Registro/login de usuarios y emision de tokens JWT.
-- Subida de imagenes de producto en disco local (`uploads/`).
-- Documentacion de API con Swagger UI.
+The project combines two workflows:
+- **MVC web flow** for the storefront, cart, and HTML views.
+- **REST API flow** for admin integrations or external clients.
 
 ---
 
-## Stack tecnologico
+## Key features
+
+- Product and category catalog.
+- Search by name or description.
+- Shopping cart per authenticated user.
+- Admin module protected by the `ADMIN` role.
+- User registration/sign-in and JWT token issuance.
+- Product image uploads stored locally (`uploads/`).
+- API documentation with Swagger UI.
+
+---
+
+## Tech stack
 
 - **Java 17**
 - **Spring Boot 3.4.x**
@@ -29,69 +29,73 @@ El proyecto combina dos estilos:
 - Spring Security
 - Thymeleaf + `thymeleaf-extras-springsecurity6`
 - PostgreSQL
+- Flyway
+- Spring Boot Validation
+- Spring Boot DevTools
+- Lombok
 - JWT (`jjwt`)
 - Springdoc OpenAPI (`springdoc-openapi-starter-webmvc-ui`)
 - Maven Wrapper (`mvnw`, `mvnw.cmd`)
 
 ---
 
-## Arquitectura (alto nivel)
+## Architecture (high level)
 
-La estructura sigue una separacion por capas:
+The structure follows a layered approach:
 
-- `controller/`: controladores MVC y REST.
-- `Service/`: logica de negocio (`ProductoService`, `CategoriaService`).
-- `Repository/`: acceso a datos con Spring Data JPA.
-- `model/`: entidades de dominio (`Producto`, `Categoria`, `CarritoItem`).
-- `auth/`: autenticacion/autorizacion (JWT, usuarios, roles, tokens, config de seguridad).
-- `src/main/resources/templates/`: vistas Thymeleaf.
+- `controller/`: MVC and REST controllers.
+- `Service/`: business logic (`ProductService`, `CategoryService`).
+- `Repository/`: data access with Spring Data JPA.
+- `model/`: domain entities (`Product`, `Category`, `CartItem`).
+- `auth/`: authentication/authorization (JWT, users, roles, tokens, security config).
+- `src/main/resources/templates/`: Thymeleaf views.
 
-Esto permite mantener el dominio desacoplado de la infraestructura y facilita evolucionar el proyecto (por ejemplo, separar API publica e interna en el futuro).
+This keeps the domain decoupled from infrastructure and makes it easier to evolve the project (for example, splitting public and internal APIs in the future).
 
 ---
 
-## Requisitos
+## Requirements
 
 - JDK 17+
-- PostgreSQL disponible
-- Maven (opcional, porque se incluye Wrapper)
+- PostgreSQL available
+- Maven (optional, because the Wrapper is included)
 
 ---
 
-## Variables de entorno
+## Environment variables
 
-El proyecto usa variables de entorno para base de datos y JWT:
+The project uses environment variables for the database and JWT:
 
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
 - `JWT_KEY`
 
-Opcionalmente puedes crear un admin inicial:
+Optionally, you can create an initial admin:
 
 - `application.security.admin.name`
 - `application.security.admin.email`
 - `application.security.admin.password`
 
-> Nota: estas tres propiedades se leen desde configuracion de Spring (por ejemplo en variables de entorno del proceso, argumentos `--`, o archivo de perfil externo).
+> Note: these three properties are read from Spring configuration (for example from process environment variables, `--` arguments, or an external profile file).
 
-Ejemplo rapido (PowerShell):
+Quick example (PowerShell):
 
 ```powershell
 $env:DB_URL="jdbc:postgresql://localhost:5432/ecommerce"
 $env:DB_USERNAME="postgres"
 $env:DB_PASSWORD="postgres"
-$env:JWT_KEY="TU_CLAVE_BASE64_O_SECRETA"
+$env:JWT_KEY="YOUR_BASE64_OR_SECRET_KEY"
 ```
 
 ---
 
-## Configuracion relevante
+## Relevant configuration
 
-Archivo: `src/main/resources/application.properties`
+File: `src/main/resources/application.properties`
 
 - `spring.jpa.hibernate.ddl-auto=validate`
-  - El esquema debe existir y estar alineado con las entidades.
+  - The schema must already exist and match the entities.
 - `spring.profiles.active=dev`
 - Swagger/OpenAPI:
   - `springdoc.api-docs.path=/v3/api-docs`
@@ -99,81 +103,80 @@ Archivo: `src/main/resources/application.properties`
 
 ---
 
-## Ejecucion local
+## Local run
 
-En Windows (PowerShell):
+On Windows (PowerShell):
 
 ```powershell
 ./mvnw.cmd spring-boot:run
 ```
 
-En Linux/macOS:
+On Linux/macOS:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Aplicacion web: `http://localhost:8080/`
+Web application: `http://localhost:8080/`
 
 ---
 
-## Documentacion API (Swagger)
+## API documentation (Swagger)
 
 - UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-Si la UI carga pero no muestra endpoints, revisa:
-- que la app arranco sin errores,
-- que `v3/api-docs` responde `200`,
-- y que seguridad permite `"/v3/api-docs"` y `"/v3/api-docs/**"`.
+If the UI loads but does not show endpoints, check:
+- that the app started without errors,
+- that `v3/api-docs` returns `200`,
+- and that security allows `"/v3/api-docs"` and `"/v3/api-docs/**"`.
 
 ---
 
-## Endpoints principales
+## Main endpoints
 
 ### Web (MVC)
 
-- `GET /` - Home con ultimos productos.
-- `GET /categoria/{id}` - Productos por categoria.
-- `GET /buscar?query=...` - Busqueda de productos.
-- `GET /carrito/ver` - Vista carrito del usuario autenticado.
-- `GET /admin` - Panel admin (requiere rol `ADMIN`).
-- `GET /login`, `GET/POST /registro` - Vistas de autenticacion.
+- `GET /` - Home with latest products.
+- `GET /category/{id}` - Products by category.
+- `GET /search?query=...` - Product search.
+- `GET /cart/view` - Cart view for the authenticated user.
+- `GET /admin` - Admin panel (requires `ADMIN` role).
+- `GET /login`, `GET/POST /register` - Authentication views.
 
-### API REST
+### REST API
 
 - Auth (`/auth`)
   - `POST /auth/register`
   - `POST /auth/login`
   - `POST /auth/refresh`
-- Productos (`/api/productos`)
+- Products (`/api/productos`)
   - `GET /api/productos`
   - `POST /api/productos`
   - `PUT /api/productos/{id}`
   - `DELETE /api/productos/{id}`
-- Categorias (`/api/categorias`)
+- Categories (`/api/categorias`)
   - `GET /api/categorias`
   - `POST /api/categorias`
   - `PUT /api/categorias/{id}`
   - `DELETE /api/categorias/{id}`
-- Usuario actual
+- Current user
   - `GET /users/me`
 
 ---
 
-## Seguridad y autenticacion
+## Security and authentication
 
-- `formLogin` para navegacion web (`/login`).
-- JWT para endpoints API (`Authorization: Bearer <token>`).
-- Roles disponibles:
+- `formLogin` for web navigation (`/login`).
+- JWT for API endpoints (`Authorization: Bearer <token>`).
+- Available roles:
   - `ROLE_USER`
   - `ROLE_ADMIN`
-- Control de acceso por metodo en rutas sensibles (ej. `@PreAuthorize("hasRole('ADMIN')")`).
+- Method-level access control on sensitive routes (e.g. `@PreAuthorize("hasRole('ADMIN')")`).
 
 ---
 
-
-## Estructura del proyecto
+## Project structure
 
 ```text
 ecommerce-web/
@@ -193,21 +196,22 @@ ecommerce-web/
 
 ---
 
-## Troubleshooting rapido
+## Quick troubleshooting
 
-- **Error de conexion a DB**: valida `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`.
-- **Error por esquema** (`ddl-auto=validate`): aplica migraciones o alinea entidades/tablas.
-- **Swagger sin endpoints**: prueba `GET /v3/api-docs` directamente.
-- **403/redirect inesperado**: revisa autenticacion activa y permisos de rol.
-- **Problemas con imagenes**: confirma permisos de escritura en `uploads/`.
+- **Database connection error**: validate `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`.
+- **Schema error** (`ddl-auto=validate`): apply migrations or align entities/tables.
+- **Swagger with no endpoints**: try `GET /v3/api-docs` directly.
+- **403 / unexpected redirect**: check the active authentication and role permissions.
+- **Image issues**: confirm write permissions on `uploads/`.
 
 ---
 
-## Roadmap sugerido
+## Suggested roadmap
 
-- Migraciones versionadas con Flyway/Liquibase.
-- Tests de integracion para seguridad y carrito.
-- Observabilidad (logs estructurados, metricas, health checks).
-- CI/CD con validaciones de build, test y calidad.
+- Extend and maintain versioned migrations with Flyway.
+- Evaluate Liquibase only if a second migration strategy is needed later.
+- Integration tests for security and cart flows.
+- Observability (structured logs, metrics, health checks).
+- CI/CD with build, test, and quality validations.
 
 ---

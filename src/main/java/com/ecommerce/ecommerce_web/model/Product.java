@@ -16,26 +16,26 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-public class Producto {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre;
-    private String descripcion;
-    private Double precio;
-    private String imagen;
-    private String tipoDeImagen;
-    private boolean disponible;
+    private String name;
+    private String description;
+    private Double price;
+    private String image;
+    private String imageType;
+    private boolean available;
     private int stock;
 
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.BINARY)
-    @Column(name = "imagen_bytes", columnDefinition = "bytea")
-    private byte[] imagenBytes;
+    @Column(name = "image_bytes", columnDefinition = "bytea")
+    private byte[] imageBytes;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

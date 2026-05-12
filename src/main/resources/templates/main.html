@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${titulo}">TecByte</title>
+    <title th:text="${title}">TecByte</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="@{/css/app.css}" href="/css/app.css" rel="stylesheet">
@@ -15,54 +15,52 @@
 <div class="container mt-4">
 
     <!-- Navbar -->
-    <div th:replace="navbar :: navbar"></div>
+    <div th:replace="~{navbar :: navbar}"></div>
 
-    <!-- Título de bienvenida -->
-    <h2 class="mt-4 mb-3">Últimos productos agregados</h2>
+    <!-- Welcome title -->
+    <h2 class="mt-4 mb-3">Latest added products</h2>
 
-    <!-- Contenedor de productos -->
+    <!-- Products container -->
     <div class="row" id="productosContainer">
 
-        <!-- Si no hay productos -->
-        <div class="col-12 text-muted" th:if="${#lists.isEmpty(ultimosProductos)}">
-            No hay productos registrados aún.
+        <!-- If there are no products -->
+        <div class="col-12 text-muted" th:if="${#lists.isEmpty(latestProducts)}">
+            No products have been registered yet.
         </div>
 
-        <!-- Tarjetas dinámicas -->
+        <!-- Dynamic cards -->
         <div class="col-md-4 mb-4 producto-card"
-             th:each="p : ${ultimosProductos}"
-             th:data-precio="${p.precio}">
+             th:each="p : ${latestProducts}"
+             th:data-price="${p.price}">
 
             <div class="card h-100 shadow-sm producto" style="display:none;">
 
                 <!-- Imagen -->
-                <a th:href="@{/producto/{id}(id=${p.id})}" class="text-decoration-none">
-                    <img th:src="@{'/api/productos/' + ${p.id} + '/imagen'}"
+                <a th:href="@{/product/{id}(id=${p.id})}" class="text-decoration-none">
+                    <img th:src="@{'/api/products/' + ${p.id} + '/image'}"
                          class="card-img-top"
                          style="height:180px; object-fit:cover;"
-                         th:alt="${p.nombre}">
+                         th:alt="${p.name}">
                 </a>
 
                 <div class="card-body d-flex flex-column">
-                    <a th:href="@{/producto/{id}(id=${p.id})}" class="text-decoration-none text-dark">
-                        <h5 class="card-title" th:text="${p.nombre}"></h5>
+                    <a th:href="@{/product/{id}(id=${p.id})}" class="text-decoration-none text-dark">
+                        <h5 class="card-title" th:text="${p.name}"></h5>
                     </a>
 
-                    <p class="small" th:text="${p.descripcion}"></p>
+                    <p class="small" th:text="${p.description}"></p>
 
-                    <!-- Precio en formato PYG -->
-                    <h6 class="text-success fw-bold" th:text="'PYG ' + ${p.precio}"></h6>
+                    <h6 class="text-success fw-bold" th:text="'PYG ' + ${p.price}"></h6>
 
                     <div class="mt-auto d-flex gap-2 flex-wrap">
-                        <a th:href="@{/producto/{id}(id=${p.id})}" class="btn btn-outline-secondary btn-sm">
-                            Ver detalle
+                        <a th:href="@{/product/{id}(id=${p.id})}" class="btn btn-outline-secondary btn-sm">
+                            View details
                         </a>
 
-                        <!-- Botón agregar al carrito -->
-                        <form th:action="@{/carrito/agregar/{id}(id=${p.id})}" method="post">
-                            <input type="hidden" name="cantidad" value="1">
+                        <form th:action="@{/cart/add/{id}(id=${p.id})}" method="post">
+                            <input type="hidden" name="quantity" value="1">
                             <button type="submit" class="btn btn-outline-primary btn-sm btn-agregar">
-                                <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                <i class="bi bi-cart-plus"></i> Add to cart
                             </button>
                         </form>
                     </div>
@@ -73,7 +71,7 @@
     </div>
 
     <!-- Footer -->
-    <div th:replace="footer :: footer"></div>
+    <div th:replace="~{footer :: footer}"></div>
 
 </div>
 
@@ -83,26 +81,18 @@
 <script>
     $(document).ready(function () {
 
-        // Animación de entrada
+        // Entrance animation
         $('.producto').each(function (index) {
             $(this).delay(120 * index).fadeIn(400);
         });
 
-        // Hover suave
+        // Smooth hover
         $('.producto').hover(
             function () { $(this).animate({marginTop: "-5px"}, 200); },
             function () { $(this).animate({marginTop: "0"}, 200); }
         );
 
-        // Animación del botón agregar
-        $('.btn-agregar').on('click', function () {
-            let btn = $(this);
-            btn.prop('disabled', true).html('<i class="bi bi-cart-check"></i> Agregado');
-            btn.closest('.card').animate({opacity: 0.7}, 200).animate({opacity: 1}, 200);
-            setTimeout(() => {
-                btn.prop('disabled', false).html('<i class="bi bi-cart-plus"></i> Agregar al carrito');
-            }, 1500);
-        });
+        // Keep add-to-cart as a normal form submit so the request reaches the server
 
     });
 </script>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Administrar Productos y Categorías</title>
+  <title>Manage Products and Categories</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link th:href="@{/css/app.css}" href="/css/app.css" rel="stylesheet">
 
@@ -12,14 +12,14 @@
 <body class="bg-light">
 
 <div class="container py-4">
-  <div th:replace="navbar :: navbar"></div>
+  <div th:replace="~{navbar :: navbar}"></div>
 
-  <h1 class="text-center mb-4">Panel de Administración</h1>
+  <h1 class="text-center mb-4">Admin Panel</h1>
 
   <!-- ===================== CATEGORÍAS ===================== -->
   <div class="card shadow mb-5">
     <div class="card-header bg-primary text-white">
-      <h4 class="mb-0">Categorías</h4>
+      <h4 class="mb-0">Categories</h4>
     </div>
 
     <div class="card-body">
@@ -27,12 +27,12 @@
         <input type="hidden" id="categoriaId">
 
         <div class="col-md-6">
-          <input type="text" class="form-control" id="categoriaNombre" placeholder="Nombre de la categoría" required>
+          <input type="text" class="form-control" id="categoriaNombre" placeholder="Category name" required>
         </div>
 
         <div class="col-md-6">
-          <button type="submit" class="btn btn-success">Guardar</button>
-          <button type="button" class="btn btn-secondary" onclick="resetCategoria()">Cancelar</button>
+          <button type="submit" class="btn btn-success">Save</button>
+          <button type="button" class="btn btn-secondary" onclick="resetCategory()">Cancel</button>
         </div>
       </form>
 
@@ -42,8 +42,8 @@
         <thead>
         <tr>
           <th>ID</th>
-          <th>Nombre</th>
-          <th>Acciones</th>
+          <th>Name</th>
+          <th>Actions</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -55,7 +55,7 @@
   <!-- ===================== PRODUCTOS ===================== -->
   <div class="card shadow">
     <div class="card-header bg-success text-white">
-      <h4 class="mb-0">Productos</h4>
+      <h4 class="mb-0">Products</h4>
     </div>
 
     <div class="card-body">
@@ -65,15 +65,15 @@
         <input type="hidden" id="productoId">
 
         <div class="col-md-6">
-          <input type="text" class="form-control" id="productoNombre" placeholder="Nombre del producto" required>
+          <input type="text" class="form-control" id="productoNombre" placeholder="Product name" required>
         </div>
 
         <div class="col-md-6">
-          <input type="number" class="form-control" id="productoPrecio" placeholder="Precio" required>
+          <input type="number" class="form-control" id="productoPrecio" placeholder="Price" required>
         </div>
 
         <div class="col-md-12">
-          <textarea class="form-control" id="productoDescripcion" placeholder="Descripción" required></textarea>
+          <textarea class="form-control" id="productoDescripcion" placeholder="Description" required></textarea>
         </div>
 
         <div class="col-md-6">
@@ -85,8 +85,8 @@
         </div>
 
         <div class="col-md-12">
-          <button type="submit" class="btn btn-primary">Guardar</button>
-          <button type="button" class="btn btn-secondary" onclick="resetProducto()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" onclick="resetProduct()">Cancel</button>
         </div>
       </form>
 
@@ -100,21 +100,21 @@
     </div>
   </div>
 
-  <div th:replace="footer :: footer"></div>
+  <div th:replace="~{footer :: footer}"></div>
 </div>
 
 
 
 <!-- ===================== JAVASCRIPT ===================== -->
 <script>
-  const API_CAT = '/api/categorias';
-  const API_PROD = '/api/productos';
+  const API_CAT = '/api/categories';
+  const API_PROD = '/api/products';
 
   let listaCategorias = [];
   let listaProductos = [];
 
-  /* ===== CATEGORÍAS ===== */
-  async function cargarCategorias() {
+  /* ===== CATEGORIES ===== */
+  async function loadCategories() {
     const res = await fetch(API_CAT);
     listaCategorias = await res.json();
 
@@ -122,63 +122,99 @@
     const select = document.querySelector('#productoCategoria');
 
     tbody.innerHTML = '';
-    select.innerHTML = '<option value="">Seleccione categoría</option>';
+    select.innerHTML = '<option value="">Select category</option>';
 
     listaCategorias.forEach(c => {
       tbody.innerHTML += `
         <tr>
           <td>${c.id}</td>
-          <td>${c.nombre}</td>
+          <td>${c.name}</td>
           <td>
-            <button class="btn btn-warning btn-sm" onclick='editarCategoria(${JSON.stringify(c)})'>Editar</button>
-            <button class="btn btn-danger btn-sm" onclick='eliminarCategoria(${c.id})'>Eliminar</button>
+            <button class="btn btn-warning btn-sm" onclick='editCategory(${JSON.stringify(c)})'>Edit</button>
+            <button class="btn btn-danger btn-sm" onclick='deleteCategory(${c.id})'>Delete</button>
           </td>
         </tr>
       `;
 
-      select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+      select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
     });
 
-    renderTabsProductosPorCategoria();
+    renderProductTabsByCategory();
   }
 
-  function editarCategoria(c) {
+  function editCategory(c) {
     categoriaId.value = c.id;
-    categoriaNombre.value = c.nombre;
+    categoriaNombre.value = c.name;
   }
 
-  async function eliminarCategoria(id) {
-    if (confirm("¿Eliminar categoría?")) {
+  async function deleteCategory(id) {
+    if (confirm("Delete category?")) {
       await fetch(`${API_CAT}/${id}`, { method: 'DELETE' });
-      cargarCategorias();
-      cargarProductos();
+      loadCategories();
+      loadProducts();
     }
   }
 
-  function resetCategoria() {
+  function resetCategory() {
     categoriaId.value = '';
     categoriaNombre.value = '';
   }
 
-  /* ===== PRODUCTOS ===== */
-  async function cargarProductos() {
+  /* ===== PRODUCTS ===== */
+  async function loadProducts() {
     const res = await fetch(API_PROD);
     listaProductos = await res.json();
 
-    renderTabsProductosPorCategoria();
+    renderProductTabsByCategory();
   }
 
-  document.querySelector('#formProducto').addEventListener('submit', async e => {
+  // Handle category form submit (create / update)
+  document.querySelector('#formCategoria').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const id = categoriaId.value;
+    const name = categoriaNombre.value;
+
+    if (!name || !name.trim()) {
+      alert('Category name is required');
+      return;
+    }
+
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `${API_CAT}/${id}` : API_CAT;
+
+    try {
+      const res = await fetch(url, {
+        method: metodo,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        alert(`Error saving category: ${res.status} ${text}`);
+        return;
+      }
+
+      resetCategory();
+      await loadCategories();
+    } catch (err) {
+      console.error('Failed to save category', err);
+      alert('Failed to save category. Check server logs.');
+    }
+  });
+
+    document.querySelector('#formProducto').addEventListener('submit', async e => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("nombre", productoNombre.value);
-    formData.append("descripcion", productoDescripcion.value);
-    formData.append("precio", productoPrecio.value);
-    formData.append("categoria_id", productoCategoria.value);
+    formData.append("name", productoNombre.value);
+    formData.append("description", productoDescripcion.value);
+    formData.append("price", productoPrecio.value);
+    formData.append("categoryId", productoCategoria.value);
 
     const img = productoImagen.files[0];
-    if (img) formData.append("imagen", img);
+    if (img) formData.append("image", img);
 
     const id = productoId.value;
     const metodo = id ? 'PUT' : 'POST';
@@ -189,35 +225,35 @@
       body: formData
     });
 
-    resetProducto();
-    cargarProductos();
+    resetProduct();
+    loadProducts();
   });
 
-  function editarProducto(p) {
+  function editProduct(p) {
     productoId.value = p.id;
-    productoNombre.value = p.nombre;
-    productoDescripcion.value = p.descripcion;
-    productoPrecio.value = p.precio;
-    productoCategoria.value = p.categoria ? p.categoria.id : "";
+    productoNombre.value = p.name;
+    productoDescripcion.value = p.description;
+    productoPrecio.value = p.price;
+    productoCategoria.value = p.category ? p.category.id : "";
   }
 
-  async function eliminarProducto(id) {
-    if (confirm("¿Eliminar producto?")) {
+  async function deleteProduct(id) {
+    if (confirm("Delete product?")) {
       await fetch(`${API_PROD}/${id}`, { method: 'DELETE' });
-      cargarProductos();
+      loadProducts();
     }
   }
 
-  function resetProducto() {
+  function resetProduct() {
     formProducto.reset();
     productoId.value = "";
   }
 
 
   /* ========================================================= */
-  /* TABS DE PRODUCTOS POR CATEGORIA */
+  /* PRODUCT TABS BY CATEGORY */
   /* ========================================================= */
-  function renderTabsProductosPorCategoria() {
+  function renderProductTabsByCategory() {
     const tabs = document.getElementById("tabsProductosCategorias");
     const content = document.getElementById("contenidoTabsProductos");
 
@@ -230,11 +266,11 @@
       const active = index === 0 ? "active" : "";
 
       tabs.innerHTML += `
-        <li class="nav-item" role="presentation">
+          <li class="nav-item" role="presentation">
           <button class="nav-link ${active}"
             data-bs-toggle="tab"
             data-bs-target="#tabCat${cat.id}">
-            ${cat.nombre}
+                ${cat.name}
           </button>
         </li>
       `;
@@ -245,11 +281,11 @@
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Categoría</th>
-                <th>Imagen</th>
-                <th>Acciones</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Image</th>
+                    <th>Actions</th>
               </tr>
             </thead>
             <tbody id="tbodyCat${cat.id}"></tbody>
@@ -258,31 +294,31 @@
       `;
     });
 
-    llenarProductosEnTabs();
+    fillProductsInTabs();
   }
 
-  function llenarProductosEnTabs() {
+  function fillProductsInTabs() {
     listaCategorias.forEach(cat => {
       const tbody = document.getElementById("tbodyCat" + cat.id);
       if (!tbody) return;
 
       tbody.innerHTML = "";
 
-      const filtrados = listaProductos.filter(p => p.categoria && p.categoria.id === cat.id);
+      const filtered = listaProductos.filter(p => p.category && p.category.id === cat.id);
 
-    filtrados.forEach(p => {
+    filtered.forEach(p => {
   tbody.innerHTML += `
     <tr>
       <td>${p.id}</td>
-      <td>${p.nombre}</td>
-      <td>$${p.precio}</td>
-      <td>${p.categoria.nombre}</td>
+      <td>${p.name}</td>
+      <td>PYG ${p.price}</td>
+      <td>${p.category.name}</td>
       <td>
-      <img src="${API_PROD}/${p.id}/imagen" width="60">
+      <img src="${API_PROD}/${p.id}/image" width="60">
       </td>
       <td>
-        <button class="btn btn-warning btn-sm" onclick='editarProducto(${JSON.stringify(p)})'>Editar</button>
-        <button class="btn btn-danger btn-sm" onclick='eliminarProducto(${p.id})'>Eliminar</button>
+        <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})'>Edit</button>
+        <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})'>Delete</button>
       </td>
     </tr>
   `;
@@ -291,8 +327,8 @@
     });
   }
 
-  cargarCategorias();
-  cargarProductos();
+  loadCategories();
+  loadProducts();
 
 </script>
 

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Registro</title>
+    <title>Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
@@ -143,39 +143,41 @@
 <body>
 <div class="auth-container">
     <div class="auth-header">
-        <h2>🚀 Crear Cuenta</h2>
-        <p>Completa el formulario para registrarte</p>
+        <h2>🚀 Create Account</h2>
+        <p>Fill the form to register</p>
     </div>
 
-    <!-- FORMULARIO DE REGISTRO -->
-    <form th:action="@{/registro}" method="post">
+    <!-- Registration form -->
+    <form th:action="@{/register}" method="post">
         <div class="form-group">
-            <label for="name">Nombre de usuario</label>
-            <input type="text" id="name" name="name" placeholder="Tu nombre de usuario" required />
+            <label for="name">Username</label>
+            <input type="text" id="name" name="name" placeholder="Your username" required />
         </div>
 
         <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required />
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="example@email.com" required />
         </div>
 
         <div class="form-group">
-            <label for="password">Contraseña</label>
+            <label for="password">Password</label>
             <input type="password" id="password" name="password" placeholder="••••••••" required />
         </div>
 
         <div class="form-group">
-            <label for="passwordConfirm">Confirmar Contraseña</label>
+            <label for="passwordConfirm">Confirm Password</label>
             <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="••••••••" required />
         </div>
 
-        <button type="submit" class="btn btn-primary">Registrarse</button>
+        <button type="submit" class="btn btn-primary">Register</button>
     </form>
 
-    <a th:href="@{/login}" class="btn btn-secondary">Ya tienes cuenta? Inicia sesion</a>
+    <a th:href="@{/login}" class="btn btn-secondary">Already have an account? Sign in</a>
 
-    <!-- MENSAJES -->
-    <div th:if="${param.error}" class="message error">Las contrasenas no coinciden.</div>
+    <!-- MESSAGES -->
+    <div th:if="${param.error} == 'password'" class="message error">Passwords do not match.</div>
+    <div th:if="${param.error} == 'exists'" class="message error">An account with that email already exists.</div>
+    <div th:if="${param.error} == 'server'" class="message error">Server error while creating account. Try again later.</div>
 </div>
 </body>
 </html>
