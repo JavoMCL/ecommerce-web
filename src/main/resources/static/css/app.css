@@ -1,33 +1,84 @@
+/* ========== GENERAL ========== */
+* {
+  box-sizing: border-box;
+}
 
 body {
   padding-top: 70px;
   padding-bottom: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
+/* ========== NAVBAR & LAYOUT ========== */
 .navbar {
   position: fixed;
   top: 0;
   z-index: 1030;
+  width: 100%;
 }
 
+.navbar-brand {
+  font-weight: 600;
+}
+
+.navbar .nav-link {
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #0d6efd !important;
+}
+
+/* Search bar responsive */
+.navbar form.d-flex {
+  width: 100%;
+  margin-right: 1rem;
+}
+
+@media (max-width: 991px) {
+  .navbar form.d-flex {
+    margin-top: 1rem;
+    margin-right: 0;
+  }
+}
+
+/* ========== FOOTER ========== */
 .footer {
   position: fixed;
   bottom: 0;
-   width: 100%;
+  width: 100%;
   z-index: 1030;
+  margin-top: auto;
 }
 
-
+/* ========== TABLES ========== */
 .table thead th {
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 .table img {
   display: block;
   height: auto;
+  max-width: 100%;
 }
 
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+  }
+}
+
+/* ========== NAVIGATION ========== */
 .nav-tabs .nav-link {
   cursor: pointer;
 }
@@ -48,6 +99,8 @@ body {
   color: rgba(255, 255, 255, 0.55);
   padding: 0.5rem 0.8rem;
   line-height: 1.5;
+  cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .nav-logout-btn:hover,
@@ -56,11 +109,165 @@ body {
   text-decoration: none;
 }
 
+/* ========== CARDS ========== */
 .card {
   border-radius: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
 }
 
 .card-header {
   border-top-left-radius: 1rem !important;
   border-top-right-radius: 1rem !important;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+@media (max-width: 576px) {
+  .card {
+    border-radius: 0.5rem;
+  }
+
+  .card-header {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+  }
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 576px) {
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ========== FORMS ========== */
+.form-control,
+.form-select {
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* ========== BADGES & ALERTS ========== */
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+}
+
+.alert {
+  border-radius: 0.5rem;
+  border: none;
+}
+
+/* ========== CONTAINERS ========== */
+.container-md,
+.container-fluid {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 576px) {
+  .container-md,
+  .container-fluid {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* ========== UTILITIES ========== */
+.min-vh-100 {
+  min-height: 100vh;
+}
+
+.flex-grow-1 {
+  flex-grow: 1 !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ========== TEXT & TYPOGRAPHY ========== */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+@media (max-width: 576px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ========== IMAGES ========== */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ========== GAPS & SPACING ========== */
+.g-3 {
+  --bs-gutter-x: 1rem;
+  --bs-gutter-y: 1rem;
+}
+
+@media (max-width: 576px) {
+  .g-3 {
+    --bs-gutter-x: 0.75rem;
+    --bs-gutter-y: 0.75rem;
+  }
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.producto {
+  animation: fadeIn 0.5s ease-in-out;
 }

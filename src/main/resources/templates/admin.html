@@ -2,35 +2,36 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Products and Categories</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link th:href="@{/css/app.css}" href="/css/app.css" rel="stylesheet">
 
 </head>
 
 <body class="bg-light">
 
-<div class="container py-4">
+<div class="container-fluid container-md py-4">
   <div th:replace="~{navbar :: navbar}"></div>
 
-  <h1 class="text-center mb-4">Admin Panel</h1>
+  <h1 class="text-center mb-5 mt-5 pt-3">Admin Panel</h1>
 
   <!-- ===================== CATEGORÍAS ===================== -->
   <div class="card shadow mb-5">
     <div class="card-header bg-primary text-white">
-      <h4 class="mb-0">Categories</h4>
+      <h4 class="mb-0"><i class="bi bi-tags"></i> Categories</h4>
     </div>
 
     <div class="card-body">
       <form id="formCategoria" class="row g-3">
         <input type="hidden" id="categoriaId">
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <input type="text" class="form-control" id="categoriaNombre" placeholder="Category name" required>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6 d-grid gap-2 d-md-flex">
           <button type="submit" class="btn btn-success">Save</button>
           <button type="button" class="btn btn-secondary" onclick="resetCategory()">Cancel</button>
         </div>
@@ -38,16 +39,18 @@
 
       <hr>
 
-      <table class="table table-striped" id="tablaCategorias">
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle" id="tablaCategorias">
+          <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th class="text-center">Actions</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
     </div>
   </div>
@@ -55,7 +58,7 @@
   <!-- ===================== PRODUCTOS ===================== -->
   <div class="card shadow">
     <div class="card-header bg-success text-white">
-      <h4 class="mb-0">Products</h4>
+      <h4 class="mb-0"><i class="bi bi-box"></i> Products</h4>
     </div>
 
     <div class="card-body">
@@ -64,27 +67,29 @@
       <form id="formProducto" class="row g-3" enctype="multipart/form-data">
         <input type="hidden" id="productoId">
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <input type="text" class="form-control" id="productoNombre" placeholder="Product name" required>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <input type="number" class="form-control" id="productoPrecio" placeholder="Price" required>
         </div>
 
-        <div class="col-md-12">
-          <textarea class="form-control" id="productoDescripcion" placeholder="Description" required></textarea>
+        <div class="col-12">
+          <textarea class="form-control" id="productoDescripcion" placeholder="Description" rows="3" required></textarea>
         </div>
 
-        <div class="col-md-6">
-          <select id="productoCategoria" class="form-select" required></select>
+        <div class="col-12 col-md-6">
+          <select id="productoCategoria" class="form-select" required>
+            <option value="">Select category</option>
+          </select>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <input type="file" class="form-control" id="productoImagen" accept="image/*">
         </div>
 
-        <div class="col-md-12">
+        <div class="col-12 d-grid gap-2 d-md-flex">
           <button type="submit" class="btn btn-primary">Save</button>
           <button type="button" class="btn btn-secondary" onclick="resetProduct()">Cancel</button>
         </div>
@@ -93,7 +98,9 @@
       <hr>
 
       <!-- ===================== TABS DE PRODUCTOS ===================== -->
-      <ul class="nav nav-tabs" id="tabsProductosCategorias"></ul>
+      <div class="table-responsive">
+        <ul class="nav nav-tabs" id="tabsProductosCategorias" role="tablist"></ul>
+      </div>
 
       <div class="tab-content mt-3" id="contenidoTabsProductos"></div>
 
@@ -106,6 +113,8 @@
 
 
 <!-- ===================== JAVASCRIPT ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
   const API_CAT = '/api/categories';
   const API_PROD = '/api/products';
@@ -129,9 +138,13 @@
         <tr>
           <td>${c.id}</td>
           <td>${c.name}</td>
-          <td>
-            <button class="btn btn-warning btn-sm" onclick='editCategory(${JSON.stringify(c)})'>Edit</button>
-            <button class="btn btn-danger btn-sm" onclick='deleteCategory(${c.id})'>Delete</button>
+          <td class="text-center">
+            <button class="btn btn-warning btn-sm" onclick='editCategory(${JSON.stringify(c)})'>
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button class="btn btn-danger btn-sm" onclick='deleteCategory(${c.id})'>
+              <i class="bi bi-trash"></i> Delete
+            </button>
           </td>
         </tr>
       `;
@@ -269,27 +282,29 @@
           <li class="nav-item" role="presentation">
           <button class="nav-link ${active}"
             data-bs-toggle="tab"
-            data-bs-target="#tabCat${cat.id}">
+            data-bs-target="#tabCat${cat.id}" role="tab">
                 ${cat.name}
           </button>
         </li>
       `;
 
       content.innerHTML += `
-        <div class="tab-pane fade ${active ? "show active" : ""}" id="tabCat${cat.id}">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Category</th>
-                    <th>Image</th>
-                    <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyCat${cat.id}"></tbody>
-          </table>
+        <div class="tab-pane fade ${active ? "show active" : ""}" id="tabCat${cat.id}" role="tabpanel">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Category</th>
+                  <th class="text-center">Image</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyCat${cat.id}"></tbody>
+            </table>
+          </div>
         </div>
       `;
     });
@@ -306,23 +321,27 @@
 
       const filtered = listaProductos.filter(p => p.category && p.category.id === cat.id);
 
-    filtered.forEach(p => {
-  tbody.innerHTML += `
-    <tr>
-      <td>${p.id}</td>
-      <td>${p.name}</td>
-      <td>PYG ${p.price}</td>
-      <td>${p.category.name}</td>
-      <td>
-      <img src="${API_PROD}/${p.id}/image" width="60">
-      </td>
-      <td>
-        <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})'>Edit</button>
-        <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})'>Delete</button>
-      </td>
-    </tr>
-  `;
-});
+      filtered.forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="text-nowrap">${p.id}</td>
+            <td>${p.name}</td>
+            <td class="text-nowrap">PYG ${p.price}</td>
+            <td>${p.category.name}</td>
+            <td class="text-center">
+              <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;">
+            </td>
+            <td class="text-center">
+              <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})' title="Edit">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})' title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
 
     });
   }
@@ -332,7 +351,6 @@
 
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
