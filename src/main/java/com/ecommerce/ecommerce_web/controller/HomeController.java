@@ -1,9 +1,9 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Repository.CategoriaRepository;
-import com.ecommerce.ecommerce_web.Repository.ProductoRepository;
-import com.ecommerce.ecommerce_web.model.Categoria;
-import com.ecommerce.ecommerce_web.model.Producto;
+import com.ecommerce.ecommerce_web.Repository.CategoryRepository;
+import com.ecommerce.ecommerce_web.Repository.ProductRepository;
+import com.ecommerce.ecommerce_web.model.Category;
+import com.ecommerce.ecommerce_web.model.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,28 +14,28 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    private final CategoriaRepository categoriaRepo;
-    private final ProductoRepository productoRepo;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    public HomeController(CategoriaRepository categoriaRepo,
-                          ProductoRepository productoRepo) {
-        this.categoriaRepo = categoriaRepo;
-        this.productoRepo = productoRepo;
+    public HomeController(CategoryRepository categoryRepo,
+                          ProductRepository productRepo) {
+        this.categoryRepository = categoryRepo;
+        this.productRepository = productRepo;
     }
 
-    @ModelAttribute("categoriasNavbar")
-    public Iterable<Categoria> categoriasNavbar() {
-        return categoriaRepo.findAll();
+    @ModelAttribute("categoriesNavbar")
+    public Iterable<Category> categoriesNavbar() {
+        return categoryRepository.findAll();
     }
 
     @GetMapping("/")
     public String home(Model model) {
 
     
-        List<Producto> ultimos = productoRepo.findTop10ByOrderByIdDesc();
+        List<Product> latestProducts = productRepository.findTop10ByOrderByIdDesc();
 
-        model.addAttribute("ultimosProductos", ultimos);
-        model.addAttribute("titulo", "TecByte");
+        model.addAttribute("latestProducts", latestProducts);
+        model.addAttribute("title", "TecByte");
 
         return "main";
     }

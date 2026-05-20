@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
+    <title>Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -59,11 +59,24 @@
             padding: 0.75rem;
             font-weight: 600;
             border-radius: 8px;
-            margin-top: 0.5rem;
         }
         
         .btn-primary:hover {
             background-color: #5568d3;
+        }
+        
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e6ea;
         }
         
         .auth-footer {
@@ -104,37 +117,45 @@
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-header">
-            <h2><i class="bi bi-lock-fill"></i> Sign In</h2>
-            <p>Enter your credentials to access your account</p>
-        </div>
-        
-        <!-- LOGIN FORM -->
-        <form th:action="@{/login}" method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="example@email.com" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required />
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Sign In</button>
-        </form>
-
-        <div class="auth-footer">
-            Don't have an account? <a th:href="@{/register}">Register here</a>
-        </div>
-
-        <!-- MESSAGES -->
-        <div th:if="${param.error}" class="message alert alert-danger">Invalid credentials. Try again.</div>
-        <div th:if="${param.logout}" class="message alert alert-success">You have been logged out successfully.</div>
-        <div th:if="${param.registered}" class="message alert alert-success">Account created. You can now sign in.</div>
+<div class="auth-container">
+    <div class="auth-header">
+        <h2><i class="bi bi-person-plus-fill"></i> Create Account</h2>
+        <p>Fill the form to register</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Registration form -->
+    <form th:action="@{/register}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Username</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Your username" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="example@email.com" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="passwordConfirm" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+
+    <a th:href="@{/login}" class="btn btn-secondary w-100 d-block">Already have an account? Sign in</a>
+
+    <!-- MESSAGES -->
+    <div th:if="${param.error} == 'password'" class="message alert alert-danger">Passwords do not match.</div>
+    <div th:if="${param.error} == 'exists'" class="message alert alert-danger">An account with that email already exists.</div>
+    <div th:if="${param.error} == 'server'" class="message alert alert-danger">Server error while creating account. Try again later.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

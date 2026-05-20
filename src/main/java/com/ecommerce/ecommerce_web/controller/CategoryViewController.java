@@ -1,8 +1,8 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Repository.CategoriaRepository;
-import com.ecommerce.ecommerce_web.Service.ProductoService;
-import com.ecommerce.ecommerce_web.model.Categoria;
+import com.ecommerce.ecommerce_web.Repository.CategoryRepository;
+import com.ecommerce.ecommerce_web.Service.ProductService;
+import com.ecommerce.ecommerce_web.model.Category;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,30 +11,28 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class CategoryViewController {
 
-    private final CategoriaRepository categoriaRepo;
-    private final ProductoService productoService;
+    private final CategoryRepository categoryRepository;
+    private final ProductService productService;
 
-    public CategoryViewController(CategoriaRepository categoriaRepo, ProductoService productoService) {
-        this.categoriaRepo = categoriaRepo;
-        this.productoService = productoService;
+    public CategoryViewController(CategoryRepository categoryRepo, ProductService productService) {
+        this.categoryRepository = categoryRepo;
+        this.productService = productService;
     }
 
-    // ========= Cargar navbar dinámico ==========
-    @ModelAttribute("categoriasNavbar")
-    public Iterable<Categoria> categoriasNavbar() {
-        return categoriaRepo.findAll();
+    @ModelAttribute("categoriesNavbar")
+    public Iterable<Category> categoriesNavbar() {
+        return categoryRepository.findAll();
     }
 
-    // ========= Mostrar productos por categoría ==========
-    @GetMapping("/categoria/{id}")
-    public String productosPorCategoria(@PathVariable Long id, Model model) {
+    @GetMapping("/category/{id}")
+    public String showProductsByCategory(@PathVariable Long id, Model model) {
 
-        Categoria categoria = categoriaRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        model.addAttribute("categoria", categoria);
-        model.addAttribute("productos", productoService.listarPorCategoria(categoria));
+        model.addAttribute("category", category);
+        model.addAttribute("products", productService.listByCategory(category));
 
-        return "categoria";
+        return "category";
     }
 }

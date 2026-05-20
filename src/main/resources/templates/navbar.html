@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -8,9 +8,9 @@
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
 
-        <a class="navbar-brand d-flex align-items-center" th:href="@{/}" aria-label="Inicio">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}" aria-label="Home">
             <i class="bi bi-house-door-fill fs-4"></i>
-            <span class="ms-2 d-none d-md-inline">Inicio</span>
+            <span class="ms-2 d-none d-md-inline">Home</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
@@ -21,10 +21,10 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
 
-            <form class="d-flex me-auto" th:action="@{/buscar}" method="get" role="search">
-                <input class="form-control me-2" type="search" name="query" placeholder="Buscar productos..."
-                    aria-label="Buscar" required>
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            <form class="d-flex me-auto" th:action="@{/search}" method="get" role="search">
+                <input class="form-control me-2" type="search" name="query" placeholder="Search products..."
+                    aria-label="Search" required>
+                <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
 
 
@@ -34,14 +34,14 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <i class="bi bi-tags-fill"></i> Categorias
+                        <i class="bi bi-tags-fill"></i> Categories
                     </a>
 
                     <ul class="dropdown-menu">
-                        <li th:each="cat : ${categoriasNavbar}">
-                            <a class="dropdown-item" th:href="@{/categoria/{id}(id=${cat.id})}">
+                        <li th:each="cat : ${categoriesNavbar}">
+                            <a class="dropdown-item" th:href="@{/category/{id}(id=${cat.id})}">
                                 <i class="bi bi-chevron-right"></i>
-                                <span th:text="${cat.nombre}"></span>
+                                <span th:text="${cat.name}"></span>
                             </a>
                         </li>
                     </ul>
@@ -51,34 +51,34 @@
 
 
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin}"><i class="bi bi-speedometer2"></i> Administrar</a>
+                    <a class="nav-link" th:href="@{/admin}"><i class="bi bi-speedometer2"></i> Admin</a>
                 </li>
 
 
-                <!-- Carrito -->
+                <!-- Cart -->
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/carrito/ver}"><i class="bi bi-cart3"></i> Carrito</a>
+                    <a class="nav-link" th:href="@{/cart/view}"><i class="bi bi-cart3"></i> Cart</a>
                 </li>
 
                 <!-- Mostrar login o cerrar sesion segun autenticacion -->
                 <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a class="nav-link" th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesion</a>
+                    <a class="nav-link" th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Login</a>
                 </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link disabled" tabindex="-1" aria-disabled="true">
                         <i class="bi bi-person-circle"></i>
-                        <span th:text="${#authentication.name}">Usuario</span>
+                        <span th:text="${#authentication.name}">User</span>
                     </a>
                 </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <form th:action="@{/logout}" method="post" class="nav-logout-form">
                         <button type="submit" class="nav-link nav-logout-btn">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                            <i class="bi bi-box-arrow-right"></i> Logout
                         </button>
                     </form>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" th:href="@{/servicios}"><i class="bi bi-tools"></i> Servicios</a>
+                <li class="nav-item"><a class="nav-link" th:href="@{/services}"><i class="bi bi-tools"></i> Services</a>
                 </li>
 
             </ul>

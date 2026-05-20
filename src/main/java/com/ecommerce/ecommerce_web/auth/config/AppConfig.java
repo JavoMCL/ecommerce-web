@@ -1,8 +1,8 @@
 package com.ecommerce.ecommerce_web.auth.config;
 
-import com.ecommerce.ecommerce_web.auth.usuario.Role;
-import com.ecommerce.ecommerce_web.auth.usuario.User;
-import com.ecommerce.ecommerce_web.auth.usuario.UserRepository;
+import com.ecommerce.ecommerce_web.auth.user.Role;
+import com.ecommerce.ecommerce_web.auth.user.User;
+import com.ecommerce.ecommerce_web.auth.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

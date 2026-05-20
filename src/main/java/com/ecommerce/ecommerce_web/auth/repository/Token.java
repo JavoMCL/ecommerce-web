@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerce_web.auth.repository;
 
-import com.ecommerce.ecommerce_web.auth.usuario.User;
+import com.ecommerce.ecommerce_web.auth.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

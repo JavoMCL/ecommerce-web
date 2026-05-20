@@ -1,13 +1,19 @@
- <footer th:fragment="footer" class="bg-dark text-white text-center py-1 fixed-bottom">
-        <div class="container">
-            <div class="text-center">
-                <span class="footer-text">
-                    &copy; Empresa <span th:text="${#dates.year(#dates.createNow())}">2026</span>
-                    <span class="footer-divider">|</span>
-                    Todos los derechos reservados
-                    <span class="footer-divider">|</span> 
-                    <a href="#" class="text-decoration-none footer-text">Política de Privacidad</a>
-                </span>
+<footer th:fragment="footer" class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <small class="footer-text d-block d-sm-inline">
+                    &copy; Company <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+                    <span class="d-none d-sm-inline"> | </span>
+                </small>
+                <small class="footer-text d-block d-sm-inline">
+                    All rights reserved
+                    <span class="d-none d-sm-inline"> | </span>
+                </small>
+                <small class="footer-text d-block d-sm-inline">
+                    <a href="#" class="text-decoration-none text-white-50">Privacy Policy</a>
+                </small>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
