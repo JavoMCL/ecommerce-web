@@ -22,12 +22,17 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
+    @Column(nullable = false, length = 500)
     private String description;
+    @Column(nullable = false)
     private Double price;
     private String image;
     private String imageType;
+    @Column(nullable = false)
     private boolean available;
+    @Column(nullable = false)
     private int stock;
 
     @JsonIgnore

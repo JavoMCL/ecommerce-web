@@ -28,10 +28,11 @@
         <input type="hidden" id="categoriaId">
 
         <div class="col-12 col-md-6">
+          <label for="categoriaNombre" class="form-label">Category name</label>
           <input type="text" class="form-control" id="categoriaNombre" placeholder="Category name" required>
         </div>
 
-        <div class="col-12 col-md-6 d-grid gap-2 d-md-flex">
+        <div class="col-12 d-grid gap-2 d-md-flex">
           <button type="submit" class="btn btn-success">Save</button>
           <button type="button" class="btn btn-secondary" onclick="resetCategory()">Cancel</button>
         </div>
@@ -64,29 +65,43 @@
     <div class="card-body">
 
       <!-- FORMULARIO -->
-      <form id="formProducto" class="row g-3" enctype="multipart/form-data">
+      <div id="productoAlert" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+      <form id="formProducto" class="row g-3 needs-validation" enctype="multipart/form-data" novalidate>
         <input type="hidden" id="productoId">
 
         <div class="col-12 col-md-6">
-          <input type="text" class="form-control" id="productoNombre" placeholder="Product name" required>
+          <label for="productoNombre" class="form-label">Product name</label>
+          <input type="text" class="form-control" id="productoNombre" placeholder="Product name" maxlength="100" required>
+          <div class="invalid-feedback">The name is required and cannot exceed 100 characters.</div>
         </div>
 
         <div class="col-12 col-md-6">
-          <input type="number" class="form-control" id="productoPrecio" placeholder="Price" required>
+          <label for="productoPrecio" class="form-label">Price</label>
+          <input type="number" class="form-control" id="productoPrecio" placeholder="Price" min="0" step="0.01" required>
+          <div class="invalid-feedback">The price is required.</div>
         </div>
 
         <div class="col-12">
-          <textarea class="form-control" id="productoDescripcion" placeholder="Description" rows="3" required></textarea>
+          <label for="productoDescripcion" class="form-label">Description</label>
+          <textarea class="form-control" id="productoDescripcion" placeholder="Description" rows="3" maxlength="500" required></textarea>
+          <div class="invalid-feedback">The description is required and cannot exceed 500 characters.</div>
         </div>
 
         <div class="col-12 col-md-6">
+          <label for="productoCategoria" class="form-label">Category</label>
           <select id="productoCategoria" class="form-select" required>
             <option value="">Select category</option>
           </select>
+          <div class="invalid-feedback">You must select a category.</div>
         </div>
 
         <div class="col-12 col-md-6">
+          <label for="productoImagen" class="form-label">Image</label>
           <input type="file" class="form-control" id="productoImagen" accept="image/*">
+          <div id="productoImagenPreviewWrapper" class="mt-2 d-none">
+            <img id="productoImagenPreview" src="" class="img-thumbnail" alt="Current product image" style="max-width: 160px;">
+          </div>
         </div>
 
         <div class="col-12 d-grid gap-2 d-md-flex">
@@ -121,6 +136,29 @@
 
   let listaCategorias = [];
   let listaProductos = [];
+  const productoAlert = document.getElementById('productoAlert');
+  const productoImagenPreviewWrapper = document.getElementById('productoImagenPreviewWrapper');
+  const productoImagenPreview = document.getElementById('productoImagenPreview');
+
+  function showProductAlert(message) {
+    productoAlert.textContent = message;
+    productoAlert.classList.remove('d-none');
+  }
+
+  function hideProductAlert() {
+    productoAlert.textContent = '';
+    productoAlert.classList.add('d-none');
+  }
+
+  function showProductImagePreview(productId) {
+    productoImagenPreview.src = `${API_PROD}/${productId}/image`;
+    productoImagenPreviewWrapper.classList.remove('d-none');
+  }
+
+  function hideProductImagePreview() {
+    productoImagenPreview.removeAttribute('src');
+    productoImagenPreviewWrapper.classList.add('d-none');
+  }
 
   /* ===== CATEGORIES ===== */
   async function loadCategories() {
@@ -217,8 +255,20 @@
     }
   });
 
-    document.querySelector('#formProducto').addEventListener('submit', async e => {
+  document.querySelector('#formProducto').addEventListener('submit', async e => {
     e.preventDefault();
+
+    hideProductAlert();
+    formProducto.classList.add('was-validated');
+
+    productoNombre.value = productoNombre.value.trim();
+    productoDescripcion.value = productoDescripcion.value.trim();
+
+    if (!formProducto.checkValidity()) {
+      e.stopPropagation();
+      formProducto.reportValidity();
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", productoNombre.value);
@@ -233,13 +283,23 @@
     const metodo = id ? 'PUT' : 'POST';
     const url = id ? `${API_PROD}/${id}` : API_PROD;
 
-    await fetch(url, {
-      method: metodo,
-      body: formData
-    });
+    try {
+      const res = await fetch(url, {
+        method: metodo,
+        body: formData
+      });
 
-    resetProduct();
-    loadProducts();
+      if (!res.ok) {
+        showProductAlert('Could not save the product. Check the required fields and length limits.');
+        return;
+      }
+
+      resetProduct();
+      await loadProducts();
+    } catch (err) {
+      console.error('Failed to save product', err);
+      showProductAlert('Could not save the product. Check your connection or the server logs.');
+    }
   });
 
   function editProduct(p) {
@@ -248,6 +308,13 @@
     productoDescripcion.value = p.description;
     productoPrecio.value = p.price;
     productoCategoria.value = p.category ? p.category.id : "";
+    productoImagen.value = '';
+
+    if (p.image) {
+      showProductImagePreview(p.id);
+    } else {
+      hideProductImagePreview();
+    }
   }
 
   async function deleteProduct(id) {
@@ -259,6 +326,9 @@
 
   function resetProduct() {
     formProducto.reset();
+    formProducto.classList.remove('was-validated');
+    hideProductAlert();
+    hideProductImagePreview();
     productoId.value = "";
   }
 
@@ -329,7 +399,7 @@
             <td class="text-nowrap">PYG ${p.price}</td>
             <td>${p.category.name}</td>
             <td class="text-center">
-              <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;">
+              <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;" alt="${p.name}">
             </td>
             <td class="text-center">
               <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})' title="Edit">
