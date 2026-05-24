@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce_web.Repository;
+package com.ecommerce.ecommerce_web.repository;
 
 import com.ecommerce.ecommerce_web.auth.user.User;
 import com.ecommerce.ecommerce_web.model.CartItem;

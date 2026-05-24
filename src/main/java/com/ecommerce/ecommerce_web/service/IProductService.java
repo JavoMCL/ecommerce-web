@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce_web.Service;
+package com.ecommerce.ecommerce_web.service;
 
 import com.ecommerce.ecommerce_web.model.Product;
 import com.ecommerce.ecommerce_web.model.Category;
