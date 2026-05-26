@@ -3,6 +3,7 @@ package com.ecommerce.ecommerce_web.Service;
 import com.ecommerce.ecommerce_web.Repository.ProductRepository;
 import com.ecommerce.ecommerce_web.model.Category;
 import com.ecommerce.ecommerce_web.model.Product;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,22 +28,23 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService service;
 
-    private Product crearProducto(Long id, String nombre, String descripcion, Double precio, String imagen, Category category) {
+    private Product createProduct(Long id, String name, String description, Double price, String image, Category category) {
         Product product = new Product();
         product.setId(id);
-        product.setName(nombre);
-        product.setDescription(descripcion);
-        product.setPrice(precio);
-        product.setImage(imagen);
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setImage(image);
         product.setCategory(category);
         return product;
     }
 
+    @DisplayName("Should list all products from repository")
     @Test
     void listProductsFromRepository() {
         List<Product> products = Arrays.asList(
-                crearProducto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null),
-                crearProducto(2L, "Keyboard", "Mechanical keyboard", 50.0, "keyboard.jpg", null)
+                createProduct(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null),
+                createProduct(2L, "Keyboard", "Mechanical keyboard", 50.0, "keyboard.jpg", null)
         );
 
         when(repo.findAll()).thenReturn(products);
@@ -54,10 +56,11 @@ class ProductServiceTest {
         verify(repo).findAll();
     }
 
+    @DisplayName("Should list products by category")
     @Test
     void listByCategory() {
         Category category = new Category(1L, "Technology");
-        List<Product> products = List.of(crearProducto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", category));
+        List<Product> products = List.of(createProduct(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", category));
 
         when(repo.findByCategory(category)).thenReturn(products);
 
@@ -68,9 +71,10 @@ class ProductServiceTest {
         verify(repo).findByCategory(category);
     }
 
+    @DisplayName("Should search products by name or description and return results")
     @Test
     void searchByNameOrDescriptionReturnsResults() {
-        List<Product> products = List.of(crearProducto(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null));
+        List<Product> products = List.of(createProduct(1L, "Mouse", "Mouse gamer", 25.0, "mouse.jpg", null));
 
         when(repo.searchByNameOrDescription("mouse")).thenReturn(products);
 
@@ -81,9 +85,10 @@ class ProductServiceTest {
         verify(repo).searchByNameOrDescription("mouse");
     }
 
+    @DisplayName("Should return product when it exists")
     @Test
     void getReturnsProductWhenExists() {
-        Product product = crearProducto(10L, "Laptop", "Basic laptop", 500.0, "laptop.jpg", null);
+        Product product = createProduct(10L, "Laptop", "Basic laptop", 500.0, "laptop.jpg", null);
         when(repo.findById(10L)).thenReturn(Optional.of(product));
 
         Optional<Product> result = service.get(10L);
@@ -93,18 +98,20 @@ class ProductServiceTest {
         verify(repo).findById(10L);
     }
 
+    @DisplayName("Should add a product successfully")
     @Test
     void addProduct() {
-        Product product = crearProducto(null, "Auriculares", "Auriculares bluetooth", 30.0, "audifonos.jpg", null);
+        Product product = createProduct(null, "headphones", "Bluetooth headphones", 30.0, "headphones.jpg", null);
 
         service.addProduct(product);
 
         verify(repo).save(product);
     }
 
+    @DisplayName("Should delete a product successfully")
     @Test
     void deleteProductRemovesProduct() {
-        Product product = crearProducto(3L, "Monitor", "Monitor 24 pulgadas", 120.0, "monitor.jpg", null);
+        Product product = createProduct(3L, "Monitor", "24-inch monitor", 120.0, "monitor.jpg", null);
 
         service.deleteProduct(product);
 
