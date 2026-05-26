@@ -2,6 +2,7 @@ package com.ecommerce.ecommerce_web.service;
 
 import com.ecommerce.ecommerce_web.repository.CategoryRepository;
 import com.ecommerce.ecommerce_web.model.Category;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ class CategoryServiceTest {
     @InjectMocks
     private CategoryService service;
 
+    @DisplayName("Should list all categories from repository")
     @Test
     void listCategoriesReturnsRepositoryCategories() {
         List<Category> categories = Arrays.asList(
@@ -40,6 +42,7 @@ class CategoryServiceTest {
         verify(repo).findAll();
     }
 
+    @DisplayName("Should add a category successfully")
     @Test
     void addCategory() {
         Category category = new Category(null, "Toys");
@@ -49,6 +52,7 @@ class CategoryServiceTest {
         verify(repo).save(category);
     }
 
+    @DisplayName("Should delete a category successfully")
     @Test
     void deleteCategory() {
         Category category = new Category(5L, "Clothes");
