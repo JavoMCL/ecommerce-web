@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.model.Category;
+import com.ecommerce.ecommerce_web.dto.CategoryDTO;
 import com.ecommerce.ecommerce_web.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +21,30 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> listCategories() {
-        return categoryService.listCategories();
+    public ResponseEntity<List<CategoryDTO>> listCategories() {
+        List<CategoryDTO> categories = categoryService.listCategoriesAsDTO();
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
+        CategoryDTO category = categoryService.getCategoryById(id);
+        if (category == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(category);
     }
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+    public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO) {
         try {
-            categoryService.addCategory(category);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            if (categoryDTO.getName() == null || categoryDTO.getName().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Category name cannot be empty");
+            }
+            CategoryDTO createdCategory = categoryService.addCategoryDTO(categoryDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
         } catch (DataIntegrityViolationException ex) {
-            // Likely unique constraint on name
+            // Unique constraint on name
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Category already exists");
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not create category");
@@ -39,11 +52,17 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        category.setId(id);
+    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
         try {
-            categoryService.addCategory(category);
-            return ResponseEntity.ok().build();
+            if (categoryDTO.getName() == null || categoryDTO.getName().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Category name cannot be empty");
+            }
+            CategoryDTO existingCategory = categoryService.getCategoryById(id);
+            if (existingCategory == null) {
+                return ResponseEntity.notFound().build();
+            }
+            CategoryDTO updatedCategory = categoryService.updateCategoryDTO(id, categoryDTO);
+            return ResponseEntity.ok(updatedCategory);
         } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Category already exists");
         } catch (Exception ex) {
@@ -54,13 +73,17 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable (value = "id") Long categoryId) {
         try {
-            Category category = new Category();
-            category.setId(categoryId);
-            categoryService.deleteCategory(category);
-            return ResponseEntity.noContent().build();
+            CategoryDTO existingCategory = categoryService.getCategoryById(categoryId);
+            if (existingCategory == null) {
+                return ResponseEntity.notFound().build();
+            }
+            categoryService.deleteCategory(categoryService.convertToEntity(existingCategory));
+            return ResponseEntity.ok().build();
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not delete category");
         }
     }
 }
+
+
 
