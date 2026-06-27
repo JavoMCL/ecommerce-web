@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Repository.CategoryRepository;
-import com.ecommerce.ecommerce_web.Repository.ProductRepository;
+import com.ecommerce.ecommerce_web.repository.CategoryRepository;
+import com.ecommerce.ecommerce_web.repository.ProductRepository;
 import com.ecommerce.ecommerce_web.model.Category;
 import com.ecommerce.ecommerce_web.model.Product;
 import org.springframework.stereotype.Controller;

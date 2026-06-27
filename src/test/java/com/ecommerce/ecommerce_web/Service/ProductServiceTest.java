@@ -1,6 +1,6 @@
-package com.ecommerce.ecommerce_web.Service;
+package com.ecommerce.ecommerce_web.service;
 
-import com.ecommerce.ecommerce_web.Repository.ProductRepository;
+import com.ecommerce.ecommerce_web.repository.ProductRepository;
 import com.ecommerce.ecommerce_web.model.Category;
 import com.ecommerce.ecommerce_web.model.Product;
 import org.junit.jupiter.api.DisplayName;

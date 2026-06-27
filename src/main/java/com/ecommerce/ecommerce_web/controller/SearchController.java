@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Service.ProductService;
+import com.ecommerce.ecommerce_web.service.ProductService;
 import com.ecommerce.ecommerce_web.model.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

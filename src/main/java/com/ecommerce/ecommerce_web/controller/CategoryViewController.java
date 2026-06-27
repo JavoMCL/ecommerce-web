@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Repository.CategoryRepository;
-import com.ecommerce.ecommerce_web.Service.ProductService;
+import com.ecommerce.ecommerce_web.repository.CategoryRepository;
+import com.ecommerce.ecommerce_web.service.ProductService;
 import com.ecommerce.ecommerce_web.model.Category;
 
 import org.springframework.stereotype.Controller;

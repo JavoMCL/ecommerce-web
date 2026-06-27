@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Repository.CartRepository;
-import com.ecommerce.ecommerce_web.Repository.ProductRepository;
+import com.ecommerce.ecommerce_web.repository.CartRepository;
+import com.ecommerce.ecommerce_web.repository.ProductRepository;
 import com.ecommerce.ecommerce_web.auth.user.User;
 import com.ecommerce.ecommerce_web.auth.user.UserRepository;
 import com.ecommerce.ecommerce_web.model.CartItem;
