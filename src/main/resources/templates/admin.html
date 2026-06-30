@@ -307,7 +307,7 @@
     productoNombre.value = p.name;
     productoDescripcion.value = p.description;
     productoPrecio.value = p.price;
-    productoCategoria.value = p.category ? p.category.id : "";
+    productoCategoria.value = p.categoryId ?? "";
     productoImagen.value = '';
 
     if (p.image) {
@@ -389,15 +389,17 @@
 
       tbody.innerHTML = "";
 
-      const filtered = listaProductos.filter(p => p.category && p.category.id === cat.id);
+      const filtered = listaProductos.filter(p => Number(p.categoryId) === Number(cat.id));
 
       filtered.forEach(p => {
+        const categoryName = listaCategorias.find(c => Number(c.id) === Number(p.categoryId))?.name ?? '';
+
         tbody.innerHTML += `
           <tr>
             <td class="text-nowrap">${p.id}</td>
             <td>${p.name}</td>
             <td class="text-nowrap">PYG ${p.price}</td>
-            <td>${p.category.name}</td>
+            <td>${categoryName}</td>
             <td class="text-center">
               <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;" alt="${p.name}">
             </td>

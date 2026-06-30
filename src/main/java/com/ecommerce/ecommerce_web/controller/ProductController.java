@@ -1,21 +1,14 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.repository.CategoryRepository;
-import com.ecommerce.ecommerce_web.service.ProductService;
-import com.ecommerce.ecommerce_web.model.Category;
+import com.ecommerce.ecommerce_web.dto.ProductDTO;
 import com.ecommerce.ecommerce_web.model.Product;
+import com.ecommerce.ecommerce_web.service.ProductService;
+
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,16 +20,26 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final CategoryRepository categoryRepository;
 
-    public ProductController(ProductService productService, CategoryRepository categoryRepository) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping
-    public List<Product> listProducts() {
-        return productService.listProducts();
+    public ResponseEntity<List<ProductDTO>> listProducts() {
+        List<ProductDTO> products = productService.listProductsAsDTO();
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductById(@PathVariable Long id) {
+        ProductDTO product = productService.getProductById(id);
+
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(product);
     }
 
     @GetMapping("/{id}/image")
@@ -45,11 +48,13 @@ public class ProductController {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         byte[] image = product.getImageBytes();
+
         if (image == null || image.length == 0) {
             return ResponseEntity.notFound().build();
         }
 
         MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+
         if (product.getImageType() != null && !product.getImageType().isBlank()) {
             try {
                 mediaType = MediaType.parseMediaType(product.getImageType());
@@ -64,7 +69,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public void createProduct(
+    public ResponseEntity<?> createProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("price") Double price,
@@ -73,22 +78,28 @@ public class ProductController {
             @RequestParam(value = "available", required = false, defaultValue = "true") boolean available,
             @RequestParam(value = "stock", required = false, defaultValue = "0") int stock
     ) throws IOException {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Product product = new Product();
-        product.setName(name);
-        product.setDescription(description);
-        product.setPrice(price);
-        product.setCategory(category);
-        product.setAvailable(available);
-        product.setStock(stock);
+        try {
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setName(name);
+            productDTO.setDescription(description);
+            productDTO.setPrice(price);
+            productDTO.setCategoryId(categoryId);
+            productDTO.setAvailable(available);
+            productDTO.setStock(stock);
 
-        productService.addProduct(product, image);
+            ProductDTO created = productService.addProductDTO(productDTO, image);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not create product");
+        }
     }
 
     @PutMapping("/{id}")
-    public void updateProduct(
+    public ResponseEntity<?> updateProduct(
             @PathVariable Long id,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
@@ -99,31 +110,54 @@ public class ProductController {
             @RequestParam(value = "stock", required = false) Integer stock
     ) throws IOException {
 
-        Product product = productService.get(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        try {
+            ProductDTO existing = productService.getProductById(id);
 
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+            if (existing == null) {
+                return ResponseEntity.notFound().build();
+            }
 
-        product.setName(name);
-        product.setDescription(description);
-        product.setPrice(price);
-        product.setCategory(category);
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setName(name);
+            productDTO.setDescription(description);
+            productDTO.setPrice(price);
+            productDTO.setCategoryId(categoryId);
 
-        if (available != null) {
-            product.setAvailable(available);
+            if (available != null) {
+                productDTO.setAvailable(available);
+            }
+
+            if (stock != null) {
+                productDTO.setStock(stock);
+            }
+
+            ProductDTO updated = productService.updateProductDTO(id, productDTO, image);
+
+            return ResponseEntity.ok(updated);
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not update product");
         }
-        if (stock != null) {
-            product.setStock(stock);
-        }
-
-        productService.addProduct(product, image);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable(value = "id") Long productId) {
-        Product product = new Product();
-        product.setId(productId);
-        productService.deleteProduct(product);
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+
+        try {
+            ProductDTO existing = productService.getProductById(id);
+
+            if (existing == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            productService.deleteProduct(productService.convertToEntity(existing));
+
+            return ResponseEntity.ok().build();
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not delete product");
+        }
     }
 }
