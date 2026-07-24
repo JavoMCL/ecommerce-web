@@ -40,7 +40,11 @@ public class ProductService implements IProductService {
         return repo.findByCategory(category);
     }
 
-    @Override
+    public List<Product> listByCategoryAvailable(Category category) {
+        return repo.findByCategoryAndAvailableTrue(category);
+    }
+
+    // ...existing code...
     public List<Product> searchByNameOrDescription(String query) {
         return repo.searchByNameOrDescription(query);
     }

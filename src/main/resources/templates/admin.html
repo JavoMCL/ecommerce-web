@@ -103,6 +103,15 @@
         </div>
 
         <div class="col-12 col-md-6">
+          <div class="form-check mt-4">
+            <input type="checkbox" class="form-check-input" id="productoAvailable">
+            <label class="form-check-label" for="productoAvailable">
+              Available for sale (requires stock > 0)
+            </label>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
           <label for="productoImagen" class="form-label">Image</label>
           <input type="file" class="form-control" id="productoImagen" accept="image/*">
           <div id="productoImagenPreviewWrapper" class="mt-2 d-none">
@@ -281,6 +290,7 @@
      formData.append("description", productoDescripcion.value);
      formData.append("price", productoPrecio.value);
      formData.append("stock", productoStock.value);
+     formData.append("available", productoAvailable.checked && productoStock.value > 0);
      formData.append("categoryId", productoCategoria.value);
 
     const img = productoImagen.files[0];
@@ -315,8 +325,11 @@
      productoDescripcion.value = p.description;
      productoPrecio.value = p.price;
      productoStock.value = p.stock ?? 0;
+     productoAvailable.checked = p.available ?? false;
      productoCategoria.value = p.categoryId ?? "";
      productoImagen.value = '';
+
+     updateAvailableCheckboxState();
 
      if (p.image) {
        showProductImagePreview(p.id);
@@ -339,6 +352,8 @@
      hideProductImagePreview();
      productoId.value = "";
      productoStock.value = "";
+     productoAvailable.checked = false;
+     updateAvailableCheckboxState();
    }
 
 
@@ -377,6 +392,7 @@
                    <th>Name</th>
                    <th>Price</th>
                    <th>Stock</th>
+                   <th class="text-center">Available</th>
                    <th>Category</th>
                    <th class="text-center">Image</th>
                    <th class="text-center">Actions</th>
@@ -410,6 +426,11 @@
              <td>${p.name}</td>
              <td class="text-nowrap">PYG ${p.price}</td>
              <td class="text-nowrap"><strong>${p.stock}</strong></td>
+             <td class="text-center">
+               <span class="badge ${p.available && p.stock > 0 ? 'bg-success' : 'bg-danger'}">
+                 ${p.available && p.stock > 0 ? 'Yes' : 'No'}
+               </span>
+             </td>
              <td>${categoryName}</td>
              <td class="text-center">
                <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;" alt="${p.name}">
@@ -428,6 +449,22 @@
 
     });
   }
+
+  function updateAvailableCheckboxState() {
+    const stock = parseInt(productoStock.value) || 0;
+    const checkbox = document.getElementById('productoAvailable');
+
+    if (stock <= 0) {
+      checkbox.disabled = true;
+      checkbox.checked = false;
+    } else {
+      checkbox.disabled = false;
+    }
+  }
+
+  // Event listener para cambios en el stock
+  document.getElementById('productoStock').addEventListener('change', updateAvailableCheckboxState);
+  document.getElementById('productoStock').addEventListener('input', updateAvailableCheckboxState);
 
   loadCategories();
   loadProducts();
