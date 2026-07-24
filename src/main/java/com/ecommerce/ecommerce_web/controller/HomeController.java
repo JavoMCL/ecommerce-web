@@ -32,7 +32,7 @@ public class HomeController {
     public String home(Model model) {
 
     
-        List<Product> latestProducts = productRepository.findTop10ByOrderByIdDesc();
+        List<Product> latestProducts = productRepository.findTop10ByAvailableTrueOrderByIdDesc();
 
         model.addAttribute("latestProducts", latestProducts);
         model.addAttribute("title", "TecByte");

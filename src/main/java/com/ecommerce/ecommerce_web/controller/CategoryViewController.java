@@ -31,7 +31,7 @@ public class CategoryViewController {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         model.addAttribute("category", category);
-        model.addAttribute("products", productService.listByCategory(category));
+        model.addAttribute("products", productService.listByCategoryAvailable(category));
 
         return "category";
     }
