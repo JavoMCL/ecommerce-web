@@ -97,6 +97,12 @@
         </div>
 
         <div class="col-12 col-md-6">
+          <label for="productoStock" class="form-label">Stock</label>
+          <input type="number" class="form-control" id="productoStock" placeholder="Stock" min="0" required>
+          <div class="invalid-feedback">The stock is required and must be a positive number.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
           <label for="productoImagen" class="form-label">Image</label>
           <input type="file" class="form-control" id="productoImagen" accept="image/*">
           <div id="productoImagenPreviewWrapper" class="mt-2 d-none">
@@ -270,11 +276,12 @@
       return;
     }
 
-    const formData = new FormData();
-    formData.append("name", productoNombre.value);
-    formData.append("description", productoDescripcion.value);
-    formData.append("price", productoPrecio.value);
-    formData.append("categoryId", productoCategoria.value);
+     const formData = new FormData();
+     formData.append("name", productoNombre.value);
+     formData.append("description", productoDescripcion.value);
+     formData.append("price", productoPrecio.value);
+     formData.append("stock", productoStock.value);
+     formData.append("categoryId", productoCategoria.value);
 
     const img = productoImagen.files[0];
     if (img) formData.append("image", img);
@@ -302,20 +309,21 @@
     }
   });
 
-  function editProduct(p) {
-    productoId.value = p.id;
-    productoNombre.value = p.name;
-    productoDescripcion.value = p.description;
-    productoPrecio.value = p.price;
-    productoCategoria.value = p.categoryId ?? "";
-    productoImagen.value = '';
+   function editProduct(p) {
+     productoId.value = p.id;
+     productoNombre.value = p.name;
+     productoDescripcion.value = p.description;
+     productoPrecio.value = p.price;
+     productoStock.value = p.stock ?? 0;
+     productoCategoria.value = p.categoryId ?? "";
+     productoImagen.value = '';
 
-    if (p.image) {
-      showProductImagePreview(p.id);
-    } else {
-      hideProductImagePreview();
-    }
-  }
+     if (p.image) {
+       showProductImagePreview(p.id);
+     } else {
+       hideProductImagePreview();
+     }
+   }
 
   async function deleteProduct(id) {
     if (confirm("Delete product?")) {
@@ -324,13 +332,14 @@
     }
   }
 
-  function resetProduct() {
-    formProducto.reset();
-    formProducto.classList.remove('was-validated');
-    hideProductAlert();
-    hideProductImagePreview();
-    productoId.value = "";
-  }
+   function resetProduct() {
+     formProducto.reset();
+     formProducto.classList.remove('was-validated');
+     hideProductAlert();
+     hideProductImagePreview();
+     productoId.value = "";
+     productoStock.value = "";
+   }
 
 
   /* ========================================================= */
@@ -364,13 +373,14 @@
             <table class="table table-sm table-hover align-middle">
               <thead class="table-light">
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Category</th>
-                  <th class="text-center">Image</th>
-                  <th class="text-center">Actions</th>
-                </tr>
+                   <th>ID</th>
+                   <th>Name</th>
+                   <th>Price</th>
+                   <th>Stock</th>
+                   <th>Category</th>
+                   <th class="text-center">Image</th>
+                   <th class="text-center">Actions</th>
+                 </tr>
               </thead>
               <tbody id="tbodyCat${cat.id}"></tbody>
             </table>
@@ -394,25 +404,26 @@
       filtered.forEach(p => {
         const categoryName = listaCategorias.find(c => Number(c.id) === Number(p.categoryId))?.name ?? '';
 
-        tbody.innerHTML += `
-          <tr>
-            <td class="text-nowrap">${p.id}</td>
-            <td>${p.name}</td>
-            <td class="text-nowrap">PYG ${p.price}</td>
-            <td>${categoryName}</td>
-            <td class="text-center">
-              <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;" alt="${p.name}">
-            </td>
-            <td class="text-center">
-              <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})' title="Edit">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})' title="Delete">
-                <i class="bi bi-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
+         tbody.innerHTML += `
+           <tr>
+             <td class="text-nowrap">${p.id}</td>
+             <td>${p.name}</td>
+             <td class="text-nowrap">PYG ${p.price}</td>
+             <td class="text-nowrap"><strong>${p.stock}</strong></td>
+             <td>${categoryName}</td>
+             <td class="text-center">
+               <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;" alt="${p.name}">
+             </td>
+             <td class="text-center">
+               <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})' title="Edit">
+                 <i class="bi bi-pencil"></i>
+               </button>
+               <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})' title="Delete">
+                 <i class="bi bi-trash"></i>
+               </button>
+             </td>
+           </tr>
+         `;
       });
 
     });
