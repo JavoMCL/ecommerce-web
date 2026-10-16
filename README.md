@@ -1,217 +1,151 @@
-# Ecommerce Web (Spring Boot)
+# Ecommerce Web
 
-Ecommerce web application built with **Spring Boot 3**, server-side rendered with **Thymeleaf**, persistence using **JPA/Hibernate + PostgreSQL**, and security handled by **Spring Security** (form-based sign-in + JWT endpoints for the API).
+An online store built with Spring Boot and Thymeleaf. It has a product catalog organized by category, search, a per-user shopping cart, and an admin panel for managing products. It also exposes a REST API with JWT authentication.
 
-The project combines two workflows:
-- **MVC web flow** for the storefront, cart, and HTML views.
-- **REST API flow** for admin integrations or external clients.
+This is a practice project: the goal was to build a complete store end to end (views, persistence, login, and API), not to have something production-ready. At the end of this README I've listed what's still missing.
 
----
+## What it does
 
-## Key features
-
-- Product and category catalog.
-- Search by name or description.
-- Shopping cart per authenticated user.
-- Admin module protected by the `ADMIN` role.
-- User registration/sign-in and JWT token issuance.
-- Product image uploads stored locally (`uploads/`).
+- Home page with the 10 latest available products.
+- Browse by category and search by name or description.
+- Product detail page with image.
+- Registration and login (web form, plus JWT via the API).
+- Per-user cart: add, change quantity, and remove items.
+- `/admin` panel (`ADMIN` role only) to create, edit, and delete products and categories, including stock, availability, and image.
 - API documentation with Swagger UI.
 
----
+## Stack
 
-## Tech stack
-
-- **Java 17**
-- **Spring Boot 3.4.x**
-- Spring Web
-- Spring Data JPA
-- Spring Security
-- Thymeleaf + `thymeleaf-extras-springsecurity6`
+- Java 17 and Spring Boot 3.4
+- Spring Web, Spring Data JPA, and Spring Security
+- Thymeleaf (with `thymeleaf-extras-springsecurity6`)
 - PostgreSQL
-- Flyway
-- Spring Boot Validation
-- Spring Boot DevTools
+- JWT with `jjwt`
+- Springdoc OpenAPI
 - Lombok
-- JWT (`jjwt`)
-- Springdoc OpenAPI (`springdoc-openapi-starter-webmvc-ui`)
-- Maven Wrapper (`mvnw`, `mvnw.cmd`)
+- Tests with JUnit and Mockito
 
----
+## Structure
 
-## Architecture (high level)
+```text
+src/main/java/com/ecommerce/ecommerce_web/
+├── auth/         # login, registration, JWT, users and roles, security config
+├── controller/   # MVC controllers (views) and REST controllers (API)
+├── service/      # product and category logic
+├── repository/   # Spring Data repositories
+├── model/        # entities: Product, Category, CartItem
+├── dto/          # ProductDTO, CategoryDTO
+└── exception/    # exceptions and global handler
 
-The structure follows a layered approach:
+src/main/resources/
+├── templates/    # Thymeleaf views
+└── static/css/
+```
 
-- `controller/`: MVC and REST controllers.
-- `Service/`: business logic (`ProductService`, `CategoryService`).
-- `Repository/`: data access with Spring Data JPA.
-- `model/`: domain entities (`Product`, `Category`, `CartItem`).
-- `auth/`: authentication/authorization (JWT, users, roles, tokens, security config).
-- `src/main/resources/templates/`: Thymeleaf views.
+## Running it
 
-This keeps the domain decoupled from infrastructure and makes it easier to evolve the project (for example, splitting public and internal APIs in the future).
+### Requirements
 
----
+- JDK 17 or higher
+- An empty PostgreSQL database (for example `ecommerce`)
 
-## Requirements
+You don't need to install Maven; the project includes the wrapper.
 
-- JDK 17+
-- PostgreSQL available
-- Maven (optional, because the Wrapper is included)
+### Environment variables
 
----
+| Variable | Purpose |
+|---|---|
+| `DB_URL` | JDBC URL, e.g. `jdbc:postgresql://localhost:5432/ecommerce` |
+| `DB_USERNAME` | Database user |
+| `DB_PASSWORD` | Database password |
+| `JWT_KEY` | Key used to sign tokens, **Base64-encoded** |
 
-## Environment variables
+To generate a valid key:
 
-The project uses environment variables for the database and JWT:
+```bash
+openssl rand -base64 32
+```
 
-- `DB_URL`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `JWT_KEY`
-
-Optionally, you can create an initial admin:
-
-- `application.security.admin.name`
-- `application.security.admin.email`
-- `application.security.admin.password`
-
-> Note: these three properties are read from Spring configuration (for example from process environment variables, `--` arguments, or an external profile file).
-
-Quick example (PowerShell):
+In PowerShell:
 
 ```powershell
 $env:DB_URL="jdbc:postgresql://localhost:5432/ecommerce"
 $env:DB_USERNAME="postgres"
 $env:DB_PASSWORD="postgres"
-$env:JWT_KEY="YOUR_BASE64_OR_SECRET_KEY"
+$env:JWT_KEY="<your base64 key>"
 ```
 
----
+### Creating an admin user (optional)
 
-## Relevant configuration
+If you set these three properties, an admin is created on startup if one doesn't already exist:
 
-File: `src/main/resources/application.properties`
-
-- `spring.jpa.hibernate.ddl-auto=validate`
-  - The schema must already exist and match the entities.
-- `spring.profiles.active=dev`
-- Swagger/OpenAPI:
-  - `springdoc.api-docs.path=/v3/api-docs`
-  - `springdoc.swagger-ui.path=/swagger-ui.html`
-
----
-
-## Local run
-
-On Windows (PowerShell):
-
-```powershell
-./mvnw.cmd spring-boot:run
+```
+application.security.admin.name
+application.security.admin.email
+application.security.admin.password
 ```
 
-On Linux/macOS:
+As environment variables they look like this: `APPLICATION_SECURITY_ADMIN_NAME`, `APPLICATION_SECURITY_ADMIN_EMAIL`, and `APPLICATION_SECURITY_ADMIN_PASSWORD`.
+
+Note: the configured email is always treated as admin at login, even if that user already existed with the `USER` role.
+
+### Start the app
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Web application: `http://localhost:8080/`
+On Windows: `./mvnw.cmd spring-boot:run`
 
----
+The app runs at http://localhost:8080. Tables are created automatically on first startup (`ddl-auto=update`).
 
-## API documentation (Swagger)
+### Tests
 
-- UI: `http://localhost:8080/swagger-ui.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+```bash
+./mvnw test
+```
 
-If the UI loads but does not show endpoints, check:
-- that the app started without errors,
-- that `v3/api-docs` returns `200`,
-- and that security allows `"/v3/api-docs"` and `"/v3/api-docs/**"`.
+Right now there are unit tests for `ProductService` and `CategoryService`. Controllers, security, and the cart have no tests.
 
----
+## Routes
 
-## Main endpoints
+### Web
 
-### Web (MVC)
-
-- `GET /` - Home with latest products.
-- `GET /category/{id}` - Products by category.
-- `GET /search?query=...` - Product search.
-- `GET /cart/view` - Cart view for the authenticated user.
-- `GET /admin` - Admin panel (requires `ADMIN` role).
-- `GET /login`, `GET/POST /register` - Authentication views.
+| Route | Description | Access |
+|---|---|---|
+| `GET /` | Home | Public |
+| `GET /category/{id}` | Products in a category | Public |
+| `GET /search?query=` | Search | Public |
+| `GET /product/{id}` | Product detail | Public |
+| `GET /login`, `GET/POST /register` | Login and registration | Public |
+| `GET /cart/view` | View cart | Logged in |
+| `POST /cart/add/{id}`, `/cart/update`, `/cart/remove` | Modify cart | Logged in |
+| `GET /admin` | Admin panel | `ADMIN` |
 
 ### REST API
 
-- Auth (`/auth`)
-  - `POST /auth/register`
-  - `POST /auth/login`
-  - `POST /auth/refresh`
-- Products (`/api/productos`)
-  - `GET /api/productos`
-  - `POST /api/productos`
-  - `PUT /api/productos/{id}`
-  - `DELETE /api/productos/{id}`
-- Categories (`/api/categorias`)
-  - `GET /api/categorias`
-  - `POST /api/categorias`
-  - `PUT /api/categorias/{id}`
-  - `DELETE /api/categorias/{id}`
-- Current user
-  - `GET /users/me`
+The `/auth` endpoints are public. Everything else requires a session or a token in the `Authorization: Bearer <token>` header.
 
----
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`
+- `GET /users/me`
+- `GET /api/products`, `GET /api/products/{id}`, `GET /api/products/{id}/image` (image is public)
+- `POST /api/products`, `PUT /api/products/{id}`, `DELETE /api/products/{id}`
+- `GET /api/categories`, `GET /api/categories/{id}`
+- `POST /api/categories`, `PUT /api/categories/{id}`, `DELETE /api/categories/{id}`
 
-## Security and authentication
+Product `POST` and `PUT` requests take `multipart/form-data` (name, description, price, `categoryId`, stock, availability, and an optional image). Category requests take JSON.
 
-- `formLogin` for web navigation (`/login`).
-- JWT for API endpoints (`Authorization: Bearer <token>`).
-- Available roles:
-  - `ROLE_USER`
-  - `ROLE_ADMIN`
-- Method-level access control on sensitive routes (e.g. `@PreAuthorize("hasRole('ADMIN')")`).
+Swagger UI: http://localhost:8080/swagger-ui.html
 
----
+## Things to keep in mind
 
-## Project structure
+This is what I know is pending or half-done:
 
-```text
-ecommerce-web/
-  src/main/java/com/ecommerce/ecommerce_web/
-	auth/
-	controller/
-	Service/
-	Repository/
-	model/
-	exception/
-  src/main/resources/
-	templates/
-	application.properties
-  uploads/
-  pom.xml
-```
-
----
-
-## Quick troubleshooting
-
-- **Database connection error**: validate `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`.
-- **Schema error** (`ddl-auto=validate`): apply migrations or align entities/tables.
-- **Swagger with no endpoints**: try `GET /v3/api-docs` directly.
-- **403 / unexpected redirect**: check the active authentication and role permissions.
-- **Image issues**: confirm write permissions on `uploads/`.
-
----
-
-## Suggested roadmap
-
-- Extend and maintain versioned migrations with Flyway.
-- Evaluate Liquibase only if a second migration strategy is needed later.
-- Integration tests for security and cart flows.
-- Observability (structured logs, metrics, health checks).
-- CI/CD with build, test, and quality validations.
-
----
+- **Checkout only empties the cart.** There are no orders, payments, or stock deduction.
+- **The write API doesn't check roles.** Only the `/admin` panel requires the `ADMIN` role; the `POST/PUT/DELETE` endpoints under `/api/products` and `/api/categories` only require being authenticated. They need `@PreAuthorize` before this is exposed anywhere.
+- **CSRF is disabled** across the whole app, including the web forms.
+- **No migrations.** Flyway is in the `pom.xml`, but there are no scripts; Hibernate generates the schema. For production this should move to migrations with `ddl-auto` set to `validate`.
+- **Images are stored in the database** (a `bytea` column). Fine for a demo, but it won't scale with many products.
+- **`show-sql=true`** is enabled in `application.properties`.
+- **`jjwt` dependencies use different versions** (0.12.3, 0.12.5, and 0.12.6). They should be unified.
+- Integration tests and a CI pipeline are still missing.
