@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerce_web.controller;
 
-import com.ecommerce.ecommerce_web.Repository.CategoryRepository;
-import com.ecommerce.ecommerce_web.Repository.ProductRepository;
+import com.ecommerce.ecommerce_web.repository.CategoryRepository;
+import com.ecommerce.ecommerce_web.repository.ProductRepository;
 import com.ecommerce.ecommerce_web.model.Category;
 import com.ecommerce.ecommerce_web.model.Product;
 import org.springframework.stereotype.Controller;
@@ -32,7 +32,7 @@ public class HomeController {
     public String home(Model model) {
 
     
-        List<Product> latestProducts = productRepository.findTop10ByOrderByIdDesc();
+        List<Product> latestProducts = productRepository.findTop10ByAvailableTrueOrderByIdDesc();
 
         model.addAttribute("latestProducts", latestProducts);
         model.addAttribute("title", "TecByte");

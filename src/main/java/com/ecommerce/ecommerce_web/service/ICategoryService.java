@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce_web.Service;
+package com.ecommerce.ecommerce_web.service;
 import java.util.List;
 
 import com.ecommerce.ecommerce_web.model.Category;

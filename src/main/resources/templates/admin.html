@@ -28,10 +28,11 @@
         <input type="hidden" id="categoriaId">
 
         <div class="col-12 col-md-6">
+          <label for="categoriaNombre" class="form-label">Category name</label>
           <input type="text" class="form-control" id="categoriaNombre" placeholder="Category name" required>
         </div>
 
-        <div class="col-12 col-md-6 d-grid gap-2 d-md-flex">
+        <div class="col-12 d-grid gap-2 d-md-flex">
           <button type="submit" class="btn btn-success">Save</button>
           <button type="button" class="btn btn-secondary" onclick="resetCategory()">Cancel</button>
         </div>
@@ -64,29 +65,58 @@
     <div class="card-body">
 
       <!-- FORMULARIO -->
-      <form id="formProducto" class="row g-3" enctype="multipart/form-data">
+      <div id="productoAlert" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+      <form id="formProducto" class="row g-3 needs-validation" enctype="multipart/form-data" novalidate>
         <input type="hidden" id="productoId">
 
         <div class="col-12 col-md-6">
-          <input type="text" class="form-control" id="productoNombre" placeholder="Product name" required>
+          <label for="productoNombre" class="form-label">Product name</label>
+          <input type="text" class="form-control" id="productoNombre" placeholder="Product name" maxlength="100" required>
+          <div class="invalid-feedback">The name is required and cannot exceed 100 characters.</div>
         </div>
 
         <div class="col-12 col-md-6">
-          <input type="number" class="form-control" id="productoPrecio" placeholder="Price" required>
+          <label for="productoPrecio" class="form-label">Price</label>
+          <input type="number" class="form-control" id="productoPrecio" placeholder="Price" min="0" step="0.01" required>
+          <div class="invalid-feedback">The price is required.</div>
         </div>
 
         <div class="col-12">
-          <textarea class="form-control" id="productoDescripcion" placeholder="Description" rows="3" required></textarea>
+          <label for="productoDescripcion" class="form-label">Description</label>
+          <textarea class="form-control" id="productoDescripcion" placeholder="Description" rows="3" maxlength="500" required></textarea>
+          <div class="invalid-feedback">The description is required and cannot exceed 500 characters.</div>
         </div>
 
         <div class="col-12 col-md-6">
+          <label for="productoCategoria" class="form-label">Category</label>
           <select id="productoCategoria" class="form-select" required>
             <option value="">Select category</option>
           </select>
+          <div class="invalid-feedback">You must select a category.</div>
         </div>
 
         <div class="col-12 col-md-6">
+          <label for="productoStock" class="form-label">Stock</label>
+          <input type="number" class="form-control" id="productoStock" placeholder="Stock" min="0" required>
+          <div class="invalid-feedback">The stock is required and must be a positive number.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="form-check mt-4">
+            <input type="checkbox" class="form-check-input" id="productoAvailable">
+            <label class="form-check-label" for="productoAvailable">
+              Available for sale (requires stock > 0)
+            </label>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="productoImagen" class="form-label">Image</label>
           <input type="file" class="form-control" id="productoImagen" accept="image/*">
+          <div id="productoImagenPreviewWrapper" class="mt-2 d-none">
+            <img id="productoImagenPreview" src="" class="img-thumbnail" alt="Current product image" style="max-width: 160px;">
+          </div>
         </div>
 
         <div class="col-12 d-grid gap-2 d-md-flex">
@@ -121,6 +151,29 @@
 
   let listaCategorias = [];
   let listaProductos = [];
+  const productoAlert = document.getElementById('productoAlert');
+  const productoImagenPreviewWrapper = document.getElementById('productoImagenPreviewWrapper');
+  const productoImagenPreview = document.getElementById('productoImagenPreview');
+
+  function showProductAlert(message) {
+    productoAlert.textContent = message;
+    productoAlert.classList.remove('d-none');
+  }
+
+  function hideProductAlert() {
+    productoAlert.textContent = '';
+    productoAlert.classList.add('d-none');
+  }
+
+  function showProductImagePreview(productId) {
+    productoImagenPreview.src = `${API_PROD}/${productId}/image`;
+    productoImagenPreviewWrapper.classList.remove('d-none');
+  }
+
+  function hideProductImagePreview() {
+    productoImagenPreview.removeAttribute('src');
+    productoImagenPreviewWrapper.classList.add('d-none');
+  }
 
   /* ===== CATEGORIES ===== */
   async function loadCategories() {
@@ -217,14 +270,28 @@
     }
   });
 
-    document.querySelector('#formProducto').addEventListener('submit', async e => {
+  document.querySelector('#formProducto').addEventListener('submit', async e => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", productoNombre.value);
-    formData.append("description", productoDescripcion.value);
-    formData.append("price", productoPrecio.value);
-    formData.append("categoryId", productoCategoria.value);
+    hideProductAlert();
+    formProducto.classList.add('was-validated');
+
+    productoNombre.value = productoNombre.value.trim();
+    productoDescripcion.value = productoDescripcion.value.trim();
+
+    if (!formProducto.checkValidity()) {
+      e.stopPropagation();
+      formProducto.reportValidity();
+      return;
+    }
+
+     const formData = new FormData();
+     formData.append("name", productoNombre.value);
+     formData.append("description", productoDescripcion.value);
+     formData.append("price", productoPrecio.value);
+     formData.append("stock", productoStock.value);
+     formData.append("available", productoAvailable.checked && productoStock.value > 0);
+     formData.append("categoryId", productoCategoria.value);
 
     const img = productoImagen.files[0];
     if (img) formData.append("image", img);
@@ -233,22 +300,43 @@
     const metodo = id ? 'PUT' : 'POST';
     const url = id ? `${API_PROD}/${id}` : API_PROD;
 
-    await fetch(url, {
-      method: metodo,
-      body: formData
-    });
+    try {
+      const res = await fetch(url, {
+        method: metodo,
+        body: formData
+      });
 
-    resetProduct();
-    loadProducts();
+      if (!res.ok) {
+        showProductAlert('Could not save the product. Check the required fields and length limits.');
+        return;
+      }
+
+      resetProduct();
+      await loadProducts();
+    } catch (err) {
+      console.error('Failed to save product', err);
+      showProductAlert('Could not save the product. Check your connection or the server logs.');
+    }
   });
 
-  function editProduct(p) {
-    productoId.value = p.id;
-    productoNombre.value = p.name;
-    productoDescripcion.value = p.description;
-    productoPrecio.value = p.price;
-    productoCategoria.value = p.category ? p.category.id : "";
-  }
+   function editProduct(p) {
+     productoId.value = p.id;
+     productoNombre.value = p.name;
+     productoDescripcion.value = p.description;
+     productoPrecio.value = p.price;
+     productoStock.value = p.stock ?? 0;
+     productoAvailable.checked = p.available ?? false;
+     productoCategoria.value = p.categoryId ?? "";
+     productoImagen.value = '';
+
+     updateAvailableCheckboxState();
+
+     if (p.image) {
+       showProductImagePreview(p.id);
+     } else {
+       hideProductImagePreview();
+     }
+   }
 
   async function deleteProduct(id) {
     if (confirm("Delete product?")) {
@@ -257,10 +345,16 @@
     }
   }
 
-  function resetProduct() {
-    formProducto.reset();
-    productoId.value = "";
-  }
+   function resetProduct() {
+     formProducto.reset();
+     formProducto.classList.remove('was-validated');
+     hideProductAlert();
+     hideProductImagePreview();
+     productoId.value = "";
+     productoStock.value = "";
+     productoAvailable.checked = false;
+     updateAvailableCheckboxState();
+   }
 
 
   /* ========================================================= */
@@ -294,13 +388,15 @@
             <table class="table table-sm table-hover align-middle">
               <thead class="table-light">
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Category</th>
-                  <th class="text-center">Image</th>
-                  <th class="text-center">Actions</th>
-                </tr>
+                   <th>ID</th>
+                   <th>Name</th>
+                   <th>Price</th>
+                   <th>Stock</th>
+                   <th class="text-center">Available</th>
+                   <th>Category</th>
+                   <th class="text-center">Image</th>
+                   <th class="text-center">Actions</th>
+                 </tr>
               </thead>
               <tbody id="tbodyCat${cat.id}"></tbody>
             </table>
@@ -319,32 +415,56 @@
 
       tbody.innerHTML = "";
 
-      const filtered = listaProductos.filter(p => p.category && p.category.id === cat.id);
+      const filtered = listaProductos.filter(p => Number(p.categoryId) === Number(cat.id));
 
       filtered.forEach(p => {
-        tbody.innerHTML += `
-          <tr>
-            <td class="text-nowrap">${p.id}</td>
-            <td>${p.name}</td>
-            <td class="text-nowrap">PYG ${p.price}</td>
-            <td>${p.category.name}</td>
-            <td class="text-center">
-              <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;">
-            </td>
-            <td class="text-center">
-              <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})' title="Edit">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})' title="Delete">
-                <i class="bi bi-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
+        const categoryName = listaCategorias.find(c => Number(c.id) === Number(p.categoryId))?.name ?? '';
+
+         tbody.innerHTML += `
+           <tr>
+             <td class="text-nowrap">${p.id}</td>
+             <td>${p.name}</td>
+             <td class="text-nowrap">PYG ${p.price}</td>
+             <td class="text-nowrap"><strong>${p.stock}</strong></td>
+             <td class="text-center">
+               <span class="badge ${p.available && p.stock > 0 ? 'bg-success' : 'bg-danger'}">
+                 ${p.available && p.stock > 0 ? 'Yes' : 'No'}
+               </span>
+             </td>
+             <td>${categoryName}</td>
+             <td class="text-center">
+               <img src="${API_PROD}/${p.id}/image" width="50" height="50" style="object-fit: cover;" alt="${p.name}">
+             </td>
+             <td class="text-center">
+               <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(p)})' title="Edit">
+                 <i class="bi bi-pencil"></i>
+               </button>
+               <button class="btn btn-danger btn-sm" onclick='deleteProduct(${p.id})' title="Delete">
+                 <i class="bi bi-trash"></i>
+               </button>
+             </td>
+           </tr>
+         `;
       });
 
     });
   }
+
+  function updateAvailableCheckboxState() {
+    const stock = parseInt(productoStock.value) || 0;
+    const checkbox = document.getElementById('productoAvailable');
+
+    if (stock <= 0) {
+      checkbox.disabled = true;
+      checkbox.checked = false;
+    } else {
+      checkbox.disabled = false;
+    }
+  }
+
+  // Event listener para cambios en el stock
+  document.getElementById('productoStock').addEventListener('change', updateAvailableCheckboxState);
+  document.getElementById('productoStock').addEventListener('input', updateAvailableCheckboxState);
 
   loadCategories();
   loadProducts();

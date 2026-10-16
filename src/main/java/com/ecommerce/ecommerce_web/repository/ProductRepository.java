@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerce_web.Repository;
+package com.ecommerce.ecommerce_web.repository;
 
 import com.ecommerce.ecommerce_web.model.Category;
 import com.ecommerce.ecommerce_web.model.Product;
@@ -15,5 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> searchByNameOrDescription(String query);
 
     List<Product> findTop10ByOrderByIdDesc();
+
+    List<Product> findTop10ByAvailableTrueOrderByIdDesc();
+
+    List<Product> findByCategoryAndAvailableTrue(Category category);
 
 }
